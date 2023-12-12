@@ -20,15 +20,6 @@ public class mainOpMode extends LinearOpMode {
     //* instance variables (physical components):
     private ElapsedTime runtime = new ElapsedTime();
 
-    private DcMotor leftLiftMotor = null;
-    private DcMotor rightLiftMotor = null;
-
-    private DcMotor intakeMotor = null;
-    private DcMotor hopperMotor = null;
-    private CRServo holderServo = null;
-
-    private Servo airplaneServo = null;
-    //TODO: UNCOMMENT ALL COMMENTED COMPONENTS ONCE CONFIGURED
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,44 +28,6 @@ public class mainOpMode extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //* add control/expansion hub hardware map (configuaration) here:
-
-        leftLiftMotor = hardwareMap.get(DcMotor.class, "leftLiftMotor");
-        rightLiftMotor = hardwareMap.get(DcMotor.class, "rightLiftMotor");
-
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-//        hopperMotor = hardwareMap.get(DcMotor.class, "hopperMotor");
-//        holderServo = hardwareMap.get(CRServo.class, "holderServo");
-//
-//        airplaneServo = hardwareMap.get(Servo.class, "airplaneServo");
-
-        //* set motor direction:
-        leftLiftMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightLiftMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-//        hopperMotor.setDirection(DcMotor.Direction.FORWARD);
-//        holderServo.setDirection(CRServo.Direction.FORWARD);
-//
-//        airplaneServo.setDirection(Servo.Direction.FORWARD);
-
-        //* reset lift encoders/set to brake mode
-        leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //! ONLY WORKS WITH DcMotorEx
-//        leftLiftMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(1, 0, 0, 0));
-//        rightLiftMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(1, 0, 0, 0));
-
-        leftLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        //* reset airplane servo position
-        //airplaneServo.setPosition(0.0);
 
         //* Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -98,42 +51,45 @@ public class mainOpMode extends LinearOpMode {
 
             //* assign intake commands
             if (gamepad1.a) {
-                intakeMotor.setPower(1);
+                drive.intakeMotor.setPower(1);
             } else if (gamepad1.b) {
-                intakeMotor.setPower(-1);
+                drive.intakeMotor.setPower(-1);
             } else {
-                intakeMotor.setPower(0);
+                drive.intakeMotor.setPower(0);
             }
 
             //* assign lift commands/soft-stops
-            if (gamepad1.right_trigger > 0.05 && leftLiftMotor.getCurrentPosition() <= 2167 && rightLiftMotor.getCurrentPosition() <= 2167) {
-                leftLiftMotor.setPower(gamepad1.right_trigger);
-                rightLiftMotor.setPower(gamepad1.right_trigger);
-            } else if (gamepad1.left_trigger > 0.05 && leftLiftMotor.getCurrentPosition() >= 0 && rightLiftMotor.getCurrentPosition() >= 0) {
-                leftLiftMotor.setPower(-gamepad1.left_trigger);
-                rightLiftMotor.setPower(-gamepad1.left_trigger);
+            if (gamepad1.right_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() <= 2167 && drive.rightLiftMotor.getCurrentPosition() <= 2167) {
+                drive.leftLiftMotor.setPower(gamepad1.right_trigger);
+                drive.rightLiftMotor.setPower(gamepad1.right_trigger);
+            } else if (gamepad1.left_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() >= 0 && drive.rightLiftMotor.getCurrentPosition() >= 0) {
+                drive.leftLiftMotor.setPower(-gamepad1.left_trigger);
+                drive.rightLiftMotor.setPower(-gamepad1.left_trigger);
             } else {
-                leftLiftMotor.setPower(0);
-                rightLiftMotor.setPower(0);
+                drive.leftLiftMotor.setPower(0);
+                drive.rightLiftMotor.setPower(0);
             }
 
-//            //* assign hopper/holder commands
-//            if (gamepad1.right_bumper) {
-//                hopperMotor.setPower(1);
-//                holderServo.setPower(1);
-//            } else if (gamepad1.left_bumper) {
-//                //TODO: ASK ABOUT REVERSE HOPPER!!!
-//                hopperMotor.setPower(-1);
-//                holderServo.setPower(-1);
-//            } else {
-//                hopperMotor.setPower(0);
-//                holderServo.setPower(0);
-//            }
-//
-//            //* assign airplane commands
-//            if (gamepad1.x) {
-//                airplaneServo.setPosition(1);
-//            }
+            //* set arm position based on lift height
+            drive.leftArmServo.setPosition(drive.leftLiftMotor.getCurrentPosition()*(1.0/2167.0));
+            drive.rightArmServo.setPosition(drive.rightLiftMotor.getCurrentPosition()*(1.0/2167.0));
+
+            //* assign hopper/holder commands
+            if (gamepad1.right_bumper) {
+                drive.hopperMotor.setPower(1);
+                drive.holderServo.setPower(1);
+            } else if (gamepad1.left_bumper) {
+                drive.hopperMotor.setPower(-1);
+                drive.holderServo.setPower(-1);
+            } else {
+                drive.hopperMotor.setPower(0);
+                drive.holderServo.setPower(0);
+            }
+
+            //* assign airplane commands
+            if (gamepad1.x) {
+                drive.airplaneServo.setPosition(1);
+            }
 
             //* telemetry
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -142,13 +98,15 @@ public class mainOpMode extends LinearOpMode {
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.addLine();
-            telemetry.addData("Left Lift Encoder", leftLiftMotor.getCurrentPosition());
-            telemetry.addData("Right Lift Encoder", rightLiftMotor.getCurrentPosition());
-//            telemetry.addData("Intake Encoder", intakeMotor.getCurrentPosition());
-//            telemetry.addData("Hopper Encoder", hopperMotor.getCurrentPosition());
-//            telemetry.addData("Holder Speed", holderServo.getPower());
-//            telemetry.addLine();
-//            telemetry.addData("Airplane Servo Position", airplaneServo.getPosition());
+            telemetry.addData("Left Lift Encoder", drive.leftLiftMotor.getCurrentPosition());
+            telemetry.addData("Right Lift Encoder", drive.rightLiftMotor.getCurrentPosition());
+            telemetry.addData("Intake Encoder", drive.intakeMotor.getCurrentPosition());
+            telemetry.addData("Hopper Encoder", drive.hopperMotor.getCurrentPosition());
+            telemetry.addData("Holder Speed", drive.holderServo.getPower());
+            telemetry.addData("Left Arm Servo Position", drive.leftArmServo.getPosition());
+            telemetry.addData("Right Arm Servo Position", drive.rightArmServo.getPosition());
+            telemetry.addLine();
+            telemetry.addData("Airplane Servo Position", drive.airplaneServo.getPosition());
             telemetry.update();
         }
     }

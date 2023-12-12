@@ -19,12 +19,14 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -79,6 +81,19 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private List<Integer> lastEncPositions = new ArrayList<>();
     private List<Integer> lastEncVels = new ArrayList<>();
+
+    //* ADD ALL CUSTOM COMPONENTS HERE
+
+    public DcMotor leftLiftMotor = null;
+    public DcMotor rightLiftMotor = null;
+
+    public DcMotor intakeMotor = null;
+    public DcMotor hopperMotor = null;
+    public CRServo holderServo = null;
+    public Servo leftArmServo = null;
+    public Servo rightArmServo = null;
+
+    public Servo airplaneServo = null;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -140,6 +155,53 @@ public class SampleMecanumDrive extends MecanumDrive {
                 follower, HEADING_PID, batteryVoltageSensor,
                 lastEncPositions, lastEncVels, lastTrackingEncPositions, lastTrackingEncVels
         );
+
+        //* CODE ALL CUSTOM COMPONENTS HERE:
+
+        //* add control/expansion hub hardware map (configuration) here:
+
+        leftLiftMotor = hardwareMap.get(DcMotor.class, "leftLiftMotor");
+        rightLiftMotor = hardwareMap.get(DcMotor.class, "rightLiftMotor");
+
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        hopperMotor = hardwareMap.get(DcMotor.class, "hopperMotor");
+        holderServo = hardwareMap.get(CRServo.class, "holderServo");
+        leftArmServo = hardwareMap.get(Servo.class, "leftArmServo");
+        rightArmServo = hardwareMap.get(Servo.class, "rightArmServo");
+
+        airplaneServo = hardwareMap.get(Servo.class, "airplaneServo");
+
+        //* set motor/servo direction:
+        leftLiftMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightLiftMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        hopperMotor.setDirection(DcMotor.Direction.FORWARD);
+        holderServo.setDirection(CRServo.Direction.FORWARD);
+        leftArmServo.setDirection(Servo.Direction.REVERSE);
+        rightArmServo.setDirection(Servo.Direction.FORWARD);
+
+        airplaneServo.setDirection(Servo.Direction.FORWARD);
+
+        //* reset lift encoders/set to brake mode
+        leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //! ONLY WORKS WITH DcMotorEx
+//        leftLiftMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(1, 0, 0, 0));
+//        rightLiftMotor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(1, 0, 0, 0));
+
+        leftLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //* reset airplane/arm servo position
+        airplaneServo.setPosition(0.0);
+
+        leftArmServo.setPosition(0.0);
+        rightArmServo.setPosition(0.0);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {

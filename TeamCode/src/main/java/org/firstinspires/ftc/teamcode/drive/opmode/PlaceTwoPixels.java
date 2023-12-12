@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import android.provider.SearchRecentSuggestions;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -14,10 +17,6 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 public class PlaceTwoPixels extends LinearOpMode {
 
     private String selectedAuto = null;
-
-    private DcMotor leftLiftMotor = null;
-    private DcMotor rightLiftMotor = null;
-    private CRServo holderServo = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,7 +28,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(48.79, 37.84, Math.toRadians(0.00)))
                 .addDisplacementMarker(() -> {
                     try {
-                        placePixel();
+                        placePixel(drive);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -40,7 +39,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .splineTo(new Vector2d(48.79, 37.84), Math.toRadians(0.00))
                 .addDisplacementMarker(() -> {
                     try {
-                        placePixel();
+                        placePixel(drive);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -54,7 +53,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(48.79, -37.84, Math.toRadians(0.00)))
                 .addDisplacementMarker(() -> {
                     try {
-                        placePixel();
+                        placePixel(drive);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -65,35 +64,12 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .splineTo(new Vector2d(48.79, -37.84), Math.toRadians(0.00))
                 .addDisplacementMarker(() -> {
                     try {
-                        placePixel();
+                        placePixel(drive);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 })
                 .build();
-
-        //* add control/expansion hub hardware map (configuaration) here:
-
-        leftLiftMotor = hardwareMap.get(DcMotor.class, "leftLiftMotor");
-        rightLiftMotor = hardwareMap.get(DcMotor.class, "rightLiftMotor");
-
-//        holderServo = hardwareMap.get(CRServo.class, "holderServo");
-
-        //* set motor direction:
-        leftLiftMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightLiftMotor.setDirection(DcMotor.Direction.FORWARD);
-
-//        holderServo.setDirection(CRServo.Direction.FORWARD);
-
-        //* reset lift encoders/set to brake mode
-        leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        leftLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLiftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addLine("Please choose from the following Autonomous programs:");
         telemetry.addData("A", "Blue Two Pixels (Close)");
@@ -191,8 +167,29 @@ public class PlaceTwoPixels extends LinearOpMode {
 
     }
 
-    public void placePixel() throws InterruptedException {
+    public void placePixel(SampleMecanumDrive drive) throws InterruptedException {
+        drive.leftLiftMotor.setTargetPosition(1000);
+        drive.rightLiftMotor.setTargetPosition(1000);
 
+        drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drive.leftLiftMotor.setPower(1);
+        drive.rightLiftMotor.setPower(1);
 
+        drive.leftArmServo.setPosition(0.75);
+        drive.rightArmServo.setPosition(0.75);
+
+        sleep(500);
+
+        drive.holderServo.setPower(1);
+
+        sleep(500);
+
+        drive.holderServo.setPower(0);
+        drive.leftArmServo.setPosition(0);
+        drive.rightArmServo.setPosition(0);
+
+        drive.leftLiftMotor.setTargetPosition(0);
+        drive.rightLiftMotor.setTargetPosition(0);
     }
 }
