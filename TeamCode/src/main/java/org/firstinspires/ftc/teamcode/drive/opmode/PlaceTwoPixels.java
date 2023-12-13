@@ -24,7 +24,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(48.79, 37.84, Math.toRadians(0.00)))
                 .addDisplacementMarker(() -> {
                     try {
-                        placePixel(drive);
+                        placeYellowPixel(drive);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -35,7 +35,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .splineTo(new Vector2d(48.79, 37.84), Math.toRadians(0.00))
                 .addDisplacementMarker(() -> {
                     try {
-                        placePixel(drive);
+                        placeYellowPixel(drive);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -49,7 +49,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(48.79, -37.84, Math.toRadians(0.00)))
                 .addDisplacementMarker(() -> {
                     try {
-                        placePixel(drive);
+                        placeYellowPixel(drive);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -60,7 +60,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .splineTo(new Vector2d(48.79, -37.84), Math.toRadians(0.00))
                 .addDisplacementMarker(() -> {
                     try {
-                        placePixel(drive);
+                        placeYellowPixel(drive);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -163,7 +163,7 @@ public class PlaceTwoPixels extends LinearOpMode {
 
     }
 
-    public void placePixel(Robot drive) throws InterruptedException {
+    public void placeYellowPixel(Robot drive) throws InterruptedException {
         drive.leftLiftMotor.setTargetPosition(1000);
         drive.rightLiftMotor.setTargetPosition(1000);
 
