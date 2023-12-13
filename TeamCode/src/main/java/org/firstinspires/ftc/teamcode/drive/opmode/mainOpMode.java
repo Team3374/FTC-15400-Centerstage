@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 
 @TeleOp
@@ -31,18 +31,23 @@ public class mainOpMode extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            //* assign drive commands
+            //* assign drive commands (field centric)
+            Pose2d poseEstimate = drive.getPoseEstimate();
+
+            Vector2d input = new Vector2d(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x
+            ).rotated(-poseEstimate.getHeading());
+
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
+                            input.getX(),
+                            input.getY(),
                             -gamepad1.right_stick_x
                     )
             );
 
             drive.update();
-
-            Pose2d poseEstimate = drive.getPoseEstimate();
 
             //* assign intake commands
             if (gamepad1.a) {

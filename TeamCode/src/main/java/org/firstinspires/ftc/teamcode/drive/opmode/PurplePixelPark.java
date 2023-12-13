@@ -295,6 +295,5 @@ public class PurplePixelPark extends LinearOpMode {
         telemetry.addLine();
         telemetry.addData("Intake Encoder", drive.intakeMotor.getCurrentPosition());
         telemetry.update();
-
     }
 }

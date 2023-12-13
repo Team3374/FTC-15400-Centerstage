@@ -137,7 +137,7 @@ public class PlaceTwoPixels extends LinearOpMode {
 
     }
 
-    public void placeYellowPixel(Robot drive) throws InterruptedException {
+    public void placeYellowPixel(Robot drive) {
         drive.leftLiftMotor.setTargetPosition(1000);
         drive.rightLiftMotor.setTargetPosition(1000);
 
