@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import android.provider.SearchRecentSuggestions;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name="Place Two Pixels (No Vision)")
@@ -20,9 +16,9 @@ public class PlaceTwoPixels extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Robot drive = new Robot(hardwareMap);
 
-        TrajectorySequence bftPath = drive.trajectorySequenceBuilder(new Pose2d(-36.52, 63.50, Math.toRadians(-90.00)))
+        TrajectorySequence bftPath = drive.trajectorySequenceBuilder(new Pose2d(-36, 63.50, Math.toRadians(-90.00)))
                 .splineToSplineHeading(new Pose2d(-29.72, 38.03, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .lineTo(new Vector2d(22.36, 38.41))
                 .lineToSplineHeading(new Pose2d(48.79, 37.84, Math.toRadians(0.00)))
@@ -35,7 +31,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 })
                 .build();
 
-        TrajectorySequence bctPath = drive.trajectorySequenceBuilder(new Pose2d(11.98, 63.50, Math.toRadians(270.00)))
+        TrajectorySequence bctPath = drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(270.00)))
                 .splineTo(new Vector2d(48.79, 37.84), Math.toRadians(0.00))
                 .addDisplacementMarker(() -> {
                     try {
@@ -47,7 +43,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .build();
 
 
-        TrajectorySequence rftPath = drive.trajectorySequenceBuilder(new Pose2d(-36.52, -63.50, Math.toRadians(90.00)))
+        TrajectorySequence rftPath = drive.trajectorySequenceBuilder(new Pose2d(-36, -63.50, Math.toRadians(90.00)))
                 .splineToSplineHeading(new Pose2d(-29.72, -38.03, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .lineTo(new Vector2d(22.36, -38.41))
                 .lineToSplineHeading(new Pose2d(48.79, -37.84, Math.toRadians(0.00)))
@@ -60,7 +56,7 @@ public class PlaceTwoPixels extends LinearOpMode {
                 })
                 .build();
 
-        TrajectorySequence rctPath = drive.trajectorySequenceBuilder(new Pose2d(11.98, -63.50, Math.toRadians(90.00)))
+        TrajectorySequence rctPath = drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
                 .splineTo(new Vector2d(48.79, -37.84), Math.toRadians(0.00))
                 .addDisplacementMarker(() -> {
                     try {
@@ -167,7 +163,7 @@ public class PlaceTwoPixels extends LinearOpMode {
 
     }
 
-    public void placePixel(SampleMecanumDrive drive) throws InterruptedException {
+    public void placePixel(Robot drive) throws InterruptedException {
         drive.leftLiftMotor.setTargetPosition(1000);
         drive.rightLiftMotor.setTargetPosition(1000);
 
