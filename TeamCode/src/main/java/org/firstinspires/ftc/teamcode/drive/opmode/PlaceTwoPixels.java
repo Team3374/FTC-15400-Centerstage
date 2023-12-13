@@ -22,24 +22,10 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(-29.72, 38.03, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .lineTo(new Vector2d(22.36, 38.41))
                 .lineToSplineHeading(new Pose2d(48.79, 37.84, Math.toRadians(0.00)))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placeYellowPixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
                 .build();
 
         TrajectorySequence bctPath = drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(270.00)))
                 .splineTo(new Vector2d(48.79, 37.84), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placeYellowPixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
                 .build();
 
 
@@ -47,24 +33,10 @@ public class PlaceTwoPixels extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(-29.72, -38.03, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .lineTo(new Vector2d(22.36, -38.41))
                 .lineToSplineHeading(new Pose2d(48.79, -37.84, Math.toRadians(0.00)))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placeYellowPixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
                 .build();
 
         TrajectorySequence rctPath = drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
                 .splineTo(new Vector2d(48.79, -37.84), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placeYellowPixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
                 .build();
 
         telemetry.addLine("Please choose from the following Autonomous programs:");
@@ -150,6 +122,8 @@ public class PlaceTwoPixels extends LinearOpMode {
                 drive.followTrajectorySequence(rftPath);
                 break;
         }
+
+        placeYellowPixel(drive);
 
         Pose2d poseEstimate = drive.getPoseEstimate();
 

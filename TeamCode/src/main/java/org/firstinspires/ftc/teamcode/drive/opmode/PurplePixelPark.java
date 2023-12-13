@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.Robot;
@@ -22,26 +21,18 @@ public class PurplePixelPark extends LinearOpMode {
         //* middle paths
         TrajectorySequence bcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, 63.50, Math.toRadians(-90.00)))
                 .lineToSplineHeading(new Pose2d(12.00, 34.00, Math.toRadians(90.00)))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .lineTo(new Vector2d(12.00, 42.00))
                 .splineTo(new Vector2d(60.00, 60.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence bfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 63.50, Math.toRadians(-90.00)))
                 .lineToSplineHeading(new Pose2d(-36.00, 34.00, Math.toRadians(90.00)))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .lineTo(new Vector2d(-36.00, 44.00))
                 .splineTo(new Vector2d(3.5, 60.00), Math.toRadians(0.00))
                 .lineTo(new Vector2d(60.00, 60.00))
@@ -49,26 +40,18 @@ public class PurplePixelPark extends LinearOpMode {
 
         TrajectorySequence rcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90)))
                 .lineToSplineHeading(new Pose2d(12.00, -34.00, Math.toRadians(-90)))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .lineTo(new Vector2d(12.00, -42.00))
                 .splineTo(new Vector2d(60.00, -60.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence rfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -63.50, Math.toRadians(90.00)))
                 .lineToSplineHeading(new Pose2d(-36.00, -34.00, Math.toRadians(-90.00)))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .lineTo(new Vector2d(-36.00, -44.00))
                 .splineTo(new Vector2d(3.50, -60.00), Math.toRadians(0.00))
                 .lineTo(new Vector2d(60.00, -60.00))
@@ -94,52 +77,36 @@ public class PurplePixelPark extends LinearOpMode {
         //* far paths
         TrajectorySequence bcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, 63.50, Math.toRadians(-90.00)))
                 .splineToLinearHeading(new Pose2d(14.00, 30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .splineTo(new Vector2d(24.00, 48.00), Math.toRadians(45.00))
                 .splineTo(new Vector2d(60.00, 60.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence bfFar = drive.trajectorySequenceBuilder(new Pose2d(-48.00, 63.50, Math.toRadians(-90.00)))
                 .splineToLinearHeading(new Pose2d(-38.00, 30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .lineToLinearHeading(new Pose2d(-33.00, 60.00, Math.toRadians(0.00)))
                 .lineTo(new Vector2d(60.00, 60.00))
                 .build();
 
         TrajectorySequence rcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(90.00)))
                 .splineToLinearHeading(new Pose2d(14.00, -30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .splineTo(new Vector2d(24.00, -48.00), Math.toRadians(-45.00))
                 .splineTo(new Vector2d(60.00, -60.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence rfFar = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(90.00)))
                 .splineToLinearHeading(new Pose2d(-38.00, -30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .lineToLinearHeading(new Pose2d(-33.00, -60.00, Math.toRadians(0.00)))
                 .lineTo(new Vector2d(60.00, -60.00))
                 .build();
@@ -148,25 +115,17 @@ public class PurplePixelPark extends LinearOpMode {
         //* close paths
         TrajectorySequence bcClose = drive.trajectorySequenceBuilder(new Pose2d(24.00, 63.50, Math.toRadians(-90.00)))
                 .splineToLinearHeading(new Pose2d(12.00, 30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .splineTo(new Vector2d(60.00, 60.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence bfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, 63.50, Math.toRadians(-90.00)))
                 .splineToLinearHeading(new Pose2d(-36.00, 30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .splineTo(new Vector2d(-30.00, 60.00), Math.toRadians(0.00))
                 .splineTo(new Vector2d(3.50, 60.00), Math.toRadians(0.00))
                 .lineTo(new Vector2d(60.00, 60.00))
@@ -174,25 +133,17 @@ public class PurplePixelPark extends LinearOpMode {
 
         TrajectorySequence rcClose = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(90.00)))
                 .splineToLinearHeading(new Pose2d(12.00, -30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .splineTo(new Vector2d(60.00, -60.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence rfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(90.00)))
                 .splineToLinearHeading(new Pose2d(-36.00, -30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> {
-                    try {
-                        placePurplePixel(drive);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
                 .splineTo(new Vector2d(-30.00, -60.00), Math.toRadians(0.00))
                 .splineTo(new Vector2d(3.50, -60.00), Math.toRadians(0.00))
                 .lineTo(new Vector2d(60.00, -60.00))
@@ -345,13 +296,5 @@ public class PurplePixelPark extends LinearOpMode {
         telemetry.addData("Intake Encoder", drive.intakeMotor.getCurrentPosition());
         telemetry.update();
 
-    }
-
-    public void placePurplePixel(Robot drive) throws InterruptedException {
-        drive.intakeMotor.setPower(-1);
-
-        sleep(500);
-
-        drive.intakeMotor.setPower(0);
     }
 }
