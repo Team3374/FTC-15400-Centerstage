@@ -35,15 +35,15 @@ public class mainOpMode extends LinearOpMode {
             Pose2d poseEstimate = drive.getPoseEstimate();
 
             Vector2d input = new Vector2d(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x
+                    gamepad1.left_stick_y,
+                    gamepad1.left_stick_x
             ).rotated(-poseEstimate.getHeading());
 
             drive.setWeightedDrivePower(
                     new Pose2d(
                             input.getX(),
                             input.getY(),
-                            -gamepad1.right_stick_x
+                            gamepad1.right_stick_x
                     )
             );
 
@@ -74,18 +74,6 @@ public class mainOpMode extends LinearOpMode {
             drive.leftArmServo.setPosition(drive.leftLiftMotor.getCurrentPosition()*(1.0/2167.0));
             drive.rightArmServo.setPosition(drive.rightLiftMotor.getCurrentPosition()*(1.0/2167.0));
 
-            //* assign hopper/holder commands
-            if (gamepad1.right_bumper) {
-                drive.hopperMotor.setPower(1);
-                drive.holderServo.setPower(1);
-            } else if (gamepad1.left_bumper) {
-                drive.hopperMotor.setPower(-1);
-                drive.holderServo.setPower(-1);
-            } else {
-                drive.hopperMotor.setPower(0);
-                drive.holderServo.setPower(0);
-            }
-
             //* assign airplane commands
             if (gamepad1.x) {
                 drive.airplaneServo.setPosition(1);
@@ -101,7 +89,6 @@ public class mainOpMode extends LinearOpMode {
             telemetry.addData("Left Lift Encoder", drive.leftLiftMotor.getCurrentPosition());
             telemetry.addData("Right Lift Encoder", drive.rightLiftMotor.getCurrentPosition());
             telemetry.addData("Intake Encoder", drive.intakeMotor.getCurrentPosition());
-            telemetry.addData("Hopper Encoder", drive.hopperMotor.getCurrentPosition());
             telemetry.addData("Holder Speed", drive.holderServo.getPower());
             telemetry.addData("Left Arm Servo Position", drive.leftArmServo.getPosition());
             telemetry.addData("Right Arm Servo Position", drive.rightArmServo.getPosition());

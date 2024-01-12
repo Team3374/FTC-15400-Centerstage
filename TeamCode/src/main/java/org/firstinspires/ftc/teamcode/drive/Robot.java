@@ -74,7 +74,7 @@ public class Robot extends MecanumDrive {
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    public DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
 
     private IMU imu;
@@ -89,7 +89,6 @@ public class Robot extends MecanumDrive {
     public DcMotor rightLiftMotor = null;
 
     public DcMotor intakeMotor = null;
-    public DcMotor hopperMotor = null;
     public CRServo holderServo = null;
     public Servo leftArmServo = null;
     public Servo rightArmServo = null;
@@ -115,10 +114,10 @@ public class Robot extends MecanumDrive {
         // TODO: ASK ERIC
 
         // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
-        imu.initialize(parameters);
+//        imu = hardwareMap.get(IMU.class, "imu");
+//        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+//                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
+//        imu.initialize(parameters);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
@@ -147,12 +146,13 @@ public class Robot extends MecanumDrive {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        //setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
@@ -167,7 +167,6 @@ public class Robot extends MecanumDrive {
         rightLiftMotor = hardwareMap.get(DcMotor.class, "rightLiftMotor");
 
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        hopperMotor = hardwareMap.get(DcMotor.class, "hopperMotor");
         holderServo = hardwareMap.get(CRServo.class, "holderServo");
         leftArmServo = hardwareMap.get(Servo.class, "leftArmServo");
         rightArmServo = hardwareMap.get(Servo.class, "rightArmServo");
@@ -181,7 +180,6 @@ public class Robot extends MecanumDrive {
         rightLiftMotor.setDirection(DcMotor.Direction.FORWARD);
 
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        hopperMotor.setDirection(DcMotor.Direction.FORWARD);
         holderServo.setDirection(CRServo.Direction.FORWARD);
         leftArmServo.setDirection(Servo.Direction.REVERSE);
         rightArmServo.setDirection(Servo.Direction.FORWARD);
@@ -363,14 +361,14 @@ public class Robot extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        //return 0;
+//        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return 0;
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).yRotationRate;
-        //return 0.0;
+//        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).yRotationRate;
+        return 0.0;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
