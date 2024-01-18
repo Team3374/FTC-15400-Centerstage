@@ -323,23 +323,26 @@ public class PurplePixelPlace extends LinearOpMode {
 
         drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        drive.leftLiftMotor.setPower(1);
-        drive.rightLiftMotor.setPower(1);
 
-        while (timer.seconds() < 1);
+        while (timer.seconds() < 1) {
+            drive.leftLiftMotor.setPower(1);
+            drive.rightLiftMotor.setPower(1);
+        }
 
-        drive.leftArmServo.setPosition(0.45);
-        drive.rightArmServo.setPosition(0.45);
+        while (timer.seconds() < 2) {
+            drive.leftArmServo.setPosition(0.45);
+            drive.rightArmServo.setPosition(0.45);
+        }
 
-        while (timer.seconds() < 2);
+        while (timer.seconds() < 3) {
+            drive.holderServo.setPower(1);
+        }
 
-        drive.holderServo.setPower(1);
-
-        while (timer.seconds() < 3);
-
-        drive.holderServo.setPower(0);
-        drive.leftArmServo.setPosition(0.1);
-        drive.rightArmServo.setPosition(0.1);
+        while (timer.seconds() < 4) {
+            drive.holderServo.setPower(0);
+            drive.leftArmServo.setPosition(0.1);
+            drive.rightArmServo.setPosition(0.1);
+        }
 
         drive.leftLiftMotor.setTargetPosition(0);
         drive.rightLiftMotor.setTargetPosition(0);
