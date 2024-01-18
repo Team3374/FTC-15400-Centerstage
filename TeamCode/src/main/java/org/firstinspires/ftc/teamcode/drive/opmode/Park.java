@@ -112,18 +112,23 @@ public class Park extends LinearOpMode {
         switch (selectedAuto) {
             case "bcp":
                 drive.followTrajectorySequence(bcpPath);
+                Storage.currentColor = "blue";
                 break;
             case "bfp":
                 drive.followTrajectorySequence(bfpPath);
+                Storage.currentColor = "blue";
                 break;
             case "rcp":
                 drive.followTrajectorySequence(rcpPath);
+                Storage.currentColor = "red";
                 break;
             case "rfp":
                 drive.followTrajectorySequence(rfpPath);
+                Storage.currentColor = "blue";
                 break;
         }
 
+        Storage.currentPose = drive.getPoseEstimate();
         Pose2d poseEstimate = drive.getPoseEstimate();
 
         telemetry.clearAll();

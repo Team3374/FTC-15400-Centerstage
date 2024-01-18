@@ -4,13 +4,15 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name="Place Purple Pixel")
-public class PurplePixelPark extends LinearOpMode {
+public class PurplePixelPlace extends LinearOpMode {
 
     private String selectedAuto = null;
 
@@ -20,41 +22,42 @@ public class PurplePixelPark extends LinearOpMode {
 
         //* middle paths
         TrajectorySequence bcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(12.00, 34.00, Math.toRadians(90.00)))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .lineToSplineHeading(new Pose2d(12.00, 32.00, Math.toRadians(90.00)))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .lineTo(new Vector2d(12.00, 42.00))
-                .splineTo(new Vector2d(60.00, 60.00), Math.toRadians(0.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineTo(new Vector2d(12.00, 36.00))
+                .splineTo(new Vector2d(50.00, 36.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence bfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(-36.00, 34.00, Math.toRadians(90.00)))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .lineToSplineHeading(new Pose2d(-36.00, 32.00, Math.toRadians(90.00)))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .lineTo(new Vector2d(-36.00, 44.00))
-                .splineTo(new Vector2d(3.5, 60.00), Math.toRadians(0.00))
-                .lineTo(new Vector2d(60.00, 60.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineTo(new Vector2d(-36.00, 36.00))
+                .splineTo(new Vector2d(-24.00, 36.00), Math.toRadians(0.00))
+                .lineTo(new Vector2d(50.00, 36.00))
                 .build();
 
-        TrajectorySequence rcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90)))
-                .lineToSplineHeading(new Pose2d(12.00, -34.00, Math.toRadians(-90)))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+
+        TrajectorySequence rcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90.00)))
+                .lineToSplineHeading(new Pose2d(12.00, -32.00, Math.toRadians(-90.00)))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .lineTo(new Vector2d(12.00, -42.00))
-                .splineTo(new Vector2d(60.00, -60.00), Math.toRadians(0.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineTo(new Vector2d(12.00, -36.00))
+                .splineTo(new Vector2d(50.00, -36.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence rfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -63.50, Math.toRadians(90.00)))
-                .lineToSplineHeading(new Pose2d(-36.00, -34.00, Math.toRadians(-90.00)))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .lineToSplineHeading(new Pose2d(-36.00, -32.00, Math.toRadians(-90.00)))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .lineTo(new Vector2d(-36.00, -44.00))
-                .splineTo(new Vector2d(3.50, -60.00), Math.toRadians(0.00))
-                .lineTo(new Vector2d(60.00, -60.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineTo(new Vector2d(-36.00, -36.00))
+                .splineTo(new Vector2d(-24.00, -36.00), Math.toRadians(0.00))
+                .lineTo(new Vector2d(50.00, -36.00))
                 .build();
 
         //* strafe paths
@@ -76,78 +79,90 @@ public class PurplePixelPark extends LinearOpMode {
 
         //* far paths
         TrajectorySequence bcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, 63.50, Math.toRadians(-90.00)))
-                .splineToLinearHeading(new Pose2d(14.00, 30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .splineToLinearHeading(new Pose2d(16.00, 30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
                 .splineTo(new Vector2d(24.00, 48.00), Math.toRadians(45.00))
-                .splineTo(new Vector2d(60.00, 60.00), Math.toRadians(0.00))
+                .splineTo(new Vector2d(50.00, 42.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence bfFar = drive.trajectorySequenceBuilder(new Pose2d(-48.00, 63.50, Math.toRadians(-90.00)))
-                .splineToLinearHeading(new Pose2d(-38.00, 30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .splineToLinearHeading(new Pose2d(-40.00, 30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .lineToLinearHeading(new Pose2d(-33.00, 60.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(60.00, 60.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineToLinearHeading(new Pose2d(-36.00, 30.00, Math.toRadians(0.00)))
+                .lineTo(new Vector2d(-36.00, 12.00))
+                .lineTo(new Vector2d(12.00, 12.00))
+                .splineTo(new Vector2d(50.00, 30.00), Math.toRadians(0.00))
                 .build();
 
-        TrajectorySequence rcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(90.00)))
-                .splineToLinearHeading(new Pose2d(14.00, -30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+
+        TrajectorySequence rcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(450.00)))
+                .splineToLinearHeading(new Pose2d(16.00, -30.00, Math.toRadians(180.00)), Math.toRadians(360.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .splineTo(new Vector2d(24.00, -48.00), Math.toRadians(-45.00))
-                .splineTo(new Vector2d(60.00, -60.00), Math.toRadians(0.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .splineTo(new Vector2d(24.00, -48.00), Math.toRadians(315.00))
+                .splineTo(new Vector2d(50.00, -42.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence rfFar = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(90.00)))
-                .splineToLinearHeading(new Pose2d(-38.00, -30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .splineToLinearHeading(new Pose2d(-40.00, -30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .lineToLinearHeading(new Pose2d(-33.00, -60.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(60.00, -60.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineToLinearHeading(new Pose2d(-36.00, -30.00, Math.toRadians(0.00)))
+                .lineTo(new Vector2d(-36.00, -12.00))
+                .lineTo(new Vector2d(12.00, -12.00))
+                .splineTo(new Vector2d(50.00, -30.00), Math.toRadians(0.00))
                 .build();
 
 
         //* close paths
         TrajectorySequence bcClose = drive.trajectorySequenceBuilder(new Pose2d(24.00, 63.50, Math.toRadians(-90.00)))
-                .splineToLinearHeading(new Pose2d(12.00, 30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .splineToLinearHeading(new Pose2d(8.00, 33.00, Math.toRadians(0.00)), Math.toRadians(180.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .splineTo(new Vector2d(60.00, 60.00), Math.toRadians(0.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .splineTo(new Vector2d(50.00, 30.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence bfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, 63.50, Math.toRadians(-90.00)))
-                .splineToLinearHeading(new Pose2d(-36.00, 30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .splineToLinearHeading(new Pose2d(-32.00, 33.00, Math.toRadians(180.00)), Math.toRadians(0.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .splineTo(new Vector2d(-30.00, 60.00), Math.toRadians(0.00))
-                .splineTo(new Vector2d(3.50, 60.00), Math.toRadians(0.00))
-                .lineTo(new Vector2d(60.00, 60.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineTo(new Vector2d(-36.00, 33.00))
+                .lineTo(new Vector2d(-36.00, 12.00))
+                .lineTo(new Vector2d(18.00, 12.00))
+                .splineToSplineHeading(new Pose2d(50.00, 30.00, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .build();
+
+
 
         TrajectorySequence rcClose = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(90.00)))
-                .splineToLinearHeading(new Pose2d(12.00, -30.00, Math.toRadians(0.00)), Math.toRadians(180.00))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .splineToLinearHeading(new Pose2d(8.00, -33.00, Math.toRadians(0.00)), Math.toRadians(180.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .splineTo(new Vector2d(60.00, -60.00), Math.toRadians(0.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .splineTo(new Vector2d(50.00, -30.00), Math.toRadians(0.00))
                 .build();
 
+
         TrajectorySequence rfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(90.00)))
-                .splineToLinearHeading(new Pose2d(-36.00, -30.00, Math.toRadians(180.00)), Math.toRadians(0.00))
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(-1))
+                .splineToLinearHeading(new Pose2d(-32.00, -33.00, Math.toRadians(180.00)), Math.toRadians(0.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> drive.intakeMotor.setPower(0))
-                .splineTo(new Vector2d(-30.00, -60.00), Math.toRadians(0.00))
-                .splineTo(new Vector2d(3.50, -60.00), Math.toRadians(0.00))
-                .lineTo(new Vector2d(60.00, -60.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineTo(new Vector2d(-36.00, -33.00))
+                .lineTo(new Vector2d(-36.00, -12.00))
+                .lineTo(new Vector2d(18.00, -12.00))
+                .splineToSplineHeading(new Pose2d(50.00, -30.00, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .build();
+
+
 
         telemetry.addLine("Please choose from the following Autonomous programs:");
         telemetry.addData("A", "Blue Purple Pixel Park (Close)");
@@ -218,7 +233,7 @@ public class PurplePixelPark extends LinearOpMode {
 
         waitForStart();
 
-        if (drive.distanceSensor.getDistance(DistanceUnit.INCH) < 100) {
+        if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 11) {
             switch (selectedAuto) {
                 case "bc":
                     drive.followTrajectorySequence(bcMiddle);
@@ -249,7 +264,7 @@ public class PurplePixelPark extends LinearOpMode {
                     break;
             }
 
-            if (drive.distanceSensor.getDistance(DistanceUnit.INCH) < 100) {
+            if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 11) {
                 switch (selectedAuto) {
                     case "bc":
                         drive.followTrajectorySequence(bcFar);
@@ -282,7 +297,7 @@ public class PurplePixelPark extends LinearOpMode {
             }
         }
 
-
+        placeYellowPixel(drive);
 
         Pose2d poseEstimate = drive.getPoseEstimate();
 
@@ -294,6 +309,39 @@ public class PurplePixelPark extends LinearOpMode {
         telemetry.addData("heading", poseEstimate.getHeading());
         telemetry.addLine();
         telemetry.addData("Intake Encoder", drive.intakeMotor.getCurrentPosition());
+        telemetry.addLine();
+        telemetry.addData("Distance", drive.distanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
+    }
+
+    public void placeYellowPixel(Robot drive) {
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+
+        drive.leftLiftMotor.setTargetPosition(1750);
+        drive.rightLiftMotor.setTargetPosition(1750);
+
+        drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drive.leftLiftMotor.setPower(1);
+        drive.rightLiftMotor.setPower(1);
+
+        while (timer.seconds() < 1);
+
+        drive.leftArmServo.setPosition(0.45);
+        drive.rightArmServo.setPosition(0.45);
+
+        while (timer.seconds() < 2);
+
+        drive.holderServo.setPower(1);
+
+        while (timer.seconds() < 3);
+
+        drive.holderServo.setPower(0);
+        drive.leftArmServo.setPosition(0.1);
+        drive.rightArmServo.setPosition(0.1);
+
+        drive.leftLiftMotor.setTargetPosition(0);
+        drive.rightLiftMotor.setTargetPosition(0);
     }
 }

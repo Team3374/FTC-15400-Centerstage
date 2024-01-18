@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -138,26 +139,31 @@ public class PlaceTwoPixels extends LinearOpMode {
     }
 
     public void placeYellowPixel(Robot drive) {
-        drive.leftLiftMotor.setTargetPosition(1000);
-        drive.rightLiftMotor.setTargetPosition(1000);
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+
+        drive.leftLiftMotor.setTargetPosition(1500);
+        drive.rightLiftMotor.setTargetPosition(1500);
 
         drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         drive.leftLiftMotor.setPower(1);
         drive.rightLiftMotor.setPower(1);
 
-        drive.leftArmServo.setPosition(0.75);
-        drive.rightArmServo.setPosition(0.75);
+        while (timer.seconds() < 1);
 
-        sleep(500);
+        drive.leftArmServo.setPosition(0.5);
+        drive.rightArmServo.setPosition(0.5);
+
+        while (timer.seconds() < 2);
 
         drive.holderServo.setPower(1);
 
-        sleep(500);
+        while (timer.seconds() < 3);
 
         drive.holderServo.setPower(0);
-        drive.leftArmServo.setPosition(0);
-        drive.rightArmServo.setPosition(0);
+        drive.leftArmServo.setPosition(0.1);
+        drive.rightArmServo.setPosition(0.1);
 
         drive.leftLiftMotor.setTargetPosition(0);
         drive.rightLiftMotor.setTargetPosition(0);
