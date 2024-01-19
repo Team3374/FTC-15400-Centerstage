@@ -18,6 +18,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -95,7 +96,7 @@ public class Robot extends MecanumDrive {
 
     public Servo airplaneServo = null;
 
-    public DistanceSensor distanceSensor = null;
+    public Rev2mDistanceSensor distanceSensor = null;
 
     public Robot(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -169,7 +170,7 @@ public class Robot extends MecanumDrive {
 
         airplaneServo = hardwareMap.get(Servo.class, "airplaneServo");
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
+        distanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "distanceSensor");
 
         //* set motor/servo direction:
         leftLiftMotor.setDirection(DcMotor.Direction.REVERSE);

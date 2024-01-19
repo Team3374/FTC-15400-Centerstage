@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -19,6 +20,7 @@ public class mainOpMode extends LinearOpMode {
     private boolean yHeld = false;
     private boolean xHeld = false;
     private String lastPressed = "x";
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -144,7 +146,7 @@ public class mainOpMode extends LinearOpMode {
             }
 
             //* assign airplane commands
-            if (gamepad1.x) {
+            if (gamepad1.dpad_up) {
                 drive.airplaneServo.setPosition(1);
             }
 
