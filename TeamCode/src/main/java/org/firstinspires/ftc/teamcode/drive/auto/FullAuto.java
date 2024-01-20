@@ -22,8 +22,9 @@ public class FullAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot drive = new Robot(hardwareMap);
 
+        //* middle paths
         TrajectorySequence bcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(12.00, 32.00, Math.toRadians(90.00)))
+                .lineToSplineHeading(new Pose2d(12.00, 34.00, Math.toRadians(90.00)))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
@@ -32,7 +33,8 @@ public class FullAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence bfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(-36.00, 32.00, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(-39.00, 60))
+                .lineToSplineHeading(new Pose2d(-36.00, 34.00, Math.toRadians(90.00)))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
@@ -42,7 +44,7 @@ public class FullAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence rcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90.00)))
-                .lineToSplineHeading(new Pose2d(12.00, -32.00, Math.toRadians(-90.00)))
+                .lineToSplineHeading(new Pose2d(12.00, -34.00, Math.toRadians(-90.00)))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
@@ -51,7 +53,8 @@ public class FullAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence rfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -63.50, Math.toRadians(90.00)))
-                .lineToSplineHeading(new Pose2d(-36.00, -32.00, Math.toRadians(-90.00)))
+                .lineTo(new Vector2d(-39.00, -60))
+                .lineToSplineHeading(new Pose2d(-36.00, -34.00, Math.toRadians(-90.00)))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
@@ -111,7 +114,7 @@ public class FullAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence bfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, 63.50, Math.toRadians(-90.00)))
-                .splineToLinearHeading(new Pose2d(-33.00, 33.00, Math.toRadians(180.00)), Math.toRadians(0.00))
+                .splineToLinearHeading(new Pose2d(-35.00, 33.00, Math.toRadians(180.00)), Math.toRadians(0.00))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
@@ -130,7 +133,7 @@ public class FullAuto extends LinearOpMode {
                 .build();
 
         TrajectorySequence rfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(90.00)))
-                .splineToLinearHeading(new Pose2d(-33.00, -33.00, Math.toRadians(180.00)), Math.toRadians(0.00))
+                .splineToLinearHeading(new Pose2d(-35.00, -33.00, Math.toRadians(180.00)), Math.toRadians(0.00))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
@@ -262,7 +265,7 @@ public class FullAuto extends LinearOpMode {
         } catch (Exception e) {}
 
         //* run middle path if sensor detects custom element
-        if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 15 && drive.distanceSensor.getDistance(DistanceUnit.INCH) < 21) {
+        if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 12 && drive.distanceSensor.getDistance(DistanceUnit.INCH) < 17) {
             switch (selectedAuto) {
                 case "bc":
                     drive.followTrajectorySequence(bcMiddle);
@@ -295,7 +298,7 @@ public class FullAuto extends LinearOpMode {
             }
 
             //* run close/far path based on if the sensor detects custom element
-            if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 15 && drive.distanceSensor.getDistance(DistanceUnit.INCH) < 21) {
+            if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 12 && drive.distanceSensor.getDistance(DistanceUnit.INCH) < 17) {
                 switch (selectedAuto) {
                     case "bc":
                         drive.followTrajectorySequence(bcFar);

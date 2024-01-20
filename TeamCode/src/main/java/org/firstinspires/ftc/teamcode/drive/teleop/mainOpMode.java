@@ -21,7 +21,6 @@ public class mainOpMode extends LinearOpMode {
     private boolean xHeld = false;
     private String lastPressed = "x";
 
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -79,19 +78,7 @@ public class mainOpMode extends LinearOpMode {
 
             Pose2d poseEstimate = drive.getPoseEstimate();
 
-            //* assign holder servo commands
-
-            if (!gamepad1.a && !gamepad1.b) {
-                if (gamepad1.right_bumper) {
-                    drive.holderServo.setPower(1);
-                } else if (gamepad1.left_bumper) {
-                    drive.holderServo.setPower(-1);
-                } else {
-                    drive.holderServo.setPower(0);
-                }
-            }
-
-            //* assign intake commands
+            //* assign intake/holder commands
             if (gamepad1.a && !gamepad1.right_bumper && !gamepad1.left_bumper) {
                 drive.intakeMotor.setPower(1);
                 drive.holderServo.setPower(1);
@@ -167,7 +154,6 @@ public class mainOpMode extends LinearOpMode {
                 yHeld = false;
             }
 
-
             if (!gamepad1.x) {
                 xHeld = false;
             }
@@ -175,6 +161,8 @@ public class mainOpMode extends LinearOpMode {
             //* assign airplane commands
             if (gamepad1.dpad_up) {
                 drive.airplaneServo.setPosition(1);
+            } else if (gamepad1.dpad_down) {
+                drive.airplaneServo.setPosition(0);
             }
 
             //* telemetry
