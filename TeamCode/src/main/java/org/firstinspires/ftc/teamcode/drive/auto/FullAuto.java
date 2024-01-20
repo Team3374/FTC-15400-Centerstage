@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -9,18 +9,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.drive.Storage;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name="Place Purple Pixel")
-public class PurplePixelPlace extends LinearOpMode {
+@Autonomous(name="Full Auto")
+public class FullAuto extends LinearOpMode {
 
-    private String selectedAuto = null;
+    //* create variable for blank auto
+    private String selectedAuto = "";
 
     @Override
     public void runOpMode() throws InterruptedException {
         Robot drive = new Robot(hardwareMap);
 
-        //* middle paths
         TrajectorySequence bcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, 63.50, Math.toRadians(-90.00)))
                 .lineToSplineHeading(new Pose2d(12.00, 32.00, Math.toRadians(90.00)))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
@@ -40,7 +41,6 @@ public class PurplePixelPlace extends LinearOpMode {
                 .lineTo(new Vector2d(51.00, 36.00))
                 .build();
 
-
         TrajectorySequence rcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90.00)))
                 .lineToSplineHeading(new Pose2d(12.00, -32.00, Math.toRadians(-90.00)))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
@@ -58,23 +58,6 @@ public class PurplePixelPlace extends LinearOpMode {
                 .lineTo(new Vector2d(-36.00, -36.00))
                 .splineTo(new Vector2d(-24.00, -36.00), Math.toRadians(0.00))
                 .lineTo(new Vector2d(51.00, -36.00))
-                .build();
-
-        //* strafe paths
-        TrajectorySequence bcStrafe = drive.trajectorySequenceBuilder(new Pose2d(12.00, 63.50, Math.toRadians(-90.00)))
-                .lineTo(new Vector2d(24.00, 63.50))
-                .build();
-
-        TrajectorySequence bfStrafe = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 63.50, Math.toRadians(-90.00)))
-                .lineTo(new Vector2d(-48.00, 63.50))
-                .build();
-
-        TrajectorySequence rcStrafe = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90.00)))
-                .lineTo(new Vector2d(24.00, -63.50))
-                .build();
-
-        TrajectorySequence rfStrafe = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -63.50, Math.toRadians(90.00)))
-                .lineTo(new Vector2d(-48.00, -63.50))
                 .build();
 
         //* far paths
@@ -98,7 +81,6 @@ public class PurplePixelPlace extends LinearOpMode {
                 .splineTo(new Vector2d(51.00, 30.00), Math.toRadians(0.00))
                 .build();
 
-
         TrajectorySequence rcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(450.00)))
                 .splineToLinearHeading(new Pose2d(15.00, -30.00, Math.toRadians(180.00)), Math.toRadians(360.00))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
@@ -118,7 +100,6 @@ public class PurplePixelPlace extends LinearOpMode {
                 .lineTo(new Vector2d(12.00, -12.00))
                 .splineTo(new Vector2d(51.00, -30.00), Math.toRadians(0.00))
                 .build();
-
 
         //* close paths
         TrajectorySequence bcClose = drive.trajectorySequenceBuilder(new Pose2d(24.00, 63.50, Math.toRadians(-90.00)))
@@ -140,8 +121,6 @@ public class PurplePixelPlace extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(51.00, 44.00, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .build();
 
-
-
         TrajectorySequence rcClose = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(90.00)))
                 .splineToLinearHeading(new Pose2d(8.00, -33.00, Math.toRadians(0.00)), Math.toRadians(180.00))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
@@ -149,7 +128,6 @@ public class PurplePixelPlace extends LinearOpMode {
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
                 .splineTo(new Vector2d(51.00, -30.00), Math.toRadians(0.00))
                 .build();
-
 
         TrajectorySequence rfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(90.00)))
                 .splineToLinearHeading(new Pose2d(-33.00, -33.00, Math.toRadians(180.00)), Math.toRadians(0.00))
@@ -162,79 +140,128 @@ public class PurplePixelPlace extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(51.00, -44.00, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .build();
 
+        //* strafe paths (scanning)
+        TrajectorySequence bcStrafe = drive.trajectorySequenceBuilder(new Pose2d(12.00, 63.50, Math.toRadians(-90.00)))
+                .lineTo(new Vector2d(24.00, 63.50))
+                .build();
 
+        TrajectorySequence bfStrafe = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 63.50, Math.toRadians(-90.00)))
+                .lineTo(new Vector2d(-48.00, 63.50))
+                .build();
 
-        telemetry.addLine("Please choose from the following Autonomous programs:");
-        telemetry.addData("A", "Blue Purple Pixel Park (Close)");
-        telemetry.addData("B", "Blue Purple Pixel Park (Far)");
-        telemetry.addData("X", "Red Purple Pixel Park (Close)");
-        telemetry.addData("Y", "Red Purple Pixel Park (Far)");
-        telemetry.update();
+        TrajectorySequence rcStrafe = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(24.00, -63.50))
+                .build();
+
+        TrajectorySequence rfStrafe = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -63.50, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(-48.00, -63.50))
+                .build();
+
+        //* create delay timer
+        ElapsedTime timer = new ElapsedTime();
+        int delay = 0;
+
+        //dPad held variables
+        boolean upHeld = false;
+        boolean downHeld = false;
+
+        //strafe variable
+        String strafeSelector = "";
 
         while(opModeInInit()) {
+            //* autonomous selector
+            telemetry.addLine("Please choose from the following Autonomous programs:");
+            telemetry.addData("A", "Blue Close");
+            telemetry.addData("B", "Blue Far");
+            telemetry.addData("X", "Red Close");
+            telemetry.addData("Y", "Red Far");
+            telemetry.addLine();
+
+            //select path
             if (gamepad1.a) {
                 selectedAuto = "bc";
-
                 drive.setPoseEstimate(new Pose2d(12, 63.50, Math.toRadians(-90.00)));
-
-                telemetry.clearAll();
-                telemetry.addLine("Please choose from the following Autonomous programs:");
-                telemetry.addData("A", "Blue Purple Pixel Park (Close)");
-                telemetry.addData("B", "Blue Purple Pixel Park (Far)");
-                telemetry.addData("X", "Red Purple Pixel Park (Close)");
-                telemetry.addData("Y", "Red Purple Pixel Park (Far)");
-                telemetry.addLine();
-                telemetry.addLine("Selected Auto: Blue Purple Pixel Park (Close)");
-                telemetry.update();
             } else if (gamepad1.b) {
                 selectedAuto = "bf";
-
                 drive.setPoseEstimate(new Pose2d(-36, 63.50, Math.toRadians(-90.00)));
-
-                telemetry.clearAll();
-                telemetry.addLine("Please choose from the following Autonomous programs:");
-                telemetry.addData("A", "Blue Purple Pixel Park (Close)");
-                telemetry.addData("B", "Blue Purple Pixel Park (Far)");
-                telemetry.addData("X", "Red Purple Pixel Park (Close)");
-                telemetry.addData("Y", "Red Purple Pixel Park (Far)");
-                telemetry.addLine();
-                telemetry.addLine("Selected Auto: Blue Purple Pixel Park (Far)");
-                telemetry.update();
             } else if (gamepad1.x) {
                 selectedAuto = "rc";
-
                 drive.setPoseEstimate(new Pose2d(12, -63.50, Math.toRadians(90.00)));
-
-                telemetry.clearAll();
-                telemetry.addLine("Please choose from the following Autonomous programs:");
-                telemetry.addData("A", "Blue Purple Pixel Park (Close)");
-                telemetry.addData("B", "Blue Purple Pixel Park (Far)");
-                telemetry.addData("X", "Red Purple Pixel Park (Close)");
-                telemetry.addData("Y", "Red Purple Pixel Park (Far)");
-                telemetry.addLine();
-                telemetry.addLine("Selected Auto: Red Purple Pixel Park (Close)");
-                telemetry.update();
             } else if (gamepad1.y) {
                 selectedAuto = "rf";
-
                 drive.setPoseEstimate(new Pose2d(-36, -63.50, Math.toRadians(90.00)));
-
-                telemetry.clearAll();
-                telemetry.addLine("Please choose from the following Autonomous programs:");
-                telemetry.addData("A", "Blue Purple Pixel Park (Close)");
-                telemetry.addData("B", "Blue Purple Pixel Park (Far)");
-                telemetry.addData("X", "Red Purple Pixel Park (Close)");
-                telemetry.addData("Y", "Red Purple Pixel Park (Far)");
-                telemetry.addLine();
-                telemetry.addLine("Selected Auto: Red Purple Pixel Park (Far)");
-                telemetry.update();
             }
+
+            //set delay
+            if (gamepad1.dpad_up && !upHeld) {
+                upHeld = true;
+                delay++;
+            } else if (gamepad1.dpad_down && delay > 0 && !downHeld) {
+                downHeld = true;
+                delay--;
+            }
+            if (!gamepad1.dpad_up) {
+                upHeld = false;
+            }
+            if (!gamepad1.dpad_down) {
+                downHeld = false;
+            }
+
+            //set strafe
+            if (gamepad1.dpad_left) {
+                strafeSelector = "left";
+            } else if (gamepad1.dpad_right) {
+                strafeSelector = "right";
+            }
+
+            switch (selectedAuto) {
+                case "bc":
+                    telemetry.addLine("Selected Auto: Blue Close");
+                    break;
+                case "bf":
+                    telemetry.addLine("Selected Auto: Blue Far");
+                    break;
+                case "rc":
+                    telemetry.addLine("Selected Auto: Red Close");
+                    break;
+                case "rf":
+                    telemetry.addLine("Selected Auto: Red Far");
+                    break;
+                default:
+                    telemetry.addLine("Selected Auto: None (Required)");
+                    break;
+            }
+
+            switch (strafeSelector) {
+                case "left":
+                    telemetry.addLine("Selected Strafe: Left");
+                    break;
+                case "right":
+                    telemetry.addLine("Selected Strafe: Right");
+                    break;
+                default:
+                    telemetry.addLine("Selected Strafe: None (Optional)");
+            }
+            telemetry.addLine();
+            telemetry.addLine("Current Delay is " + delay + " seconds");
+            telemetry.update();
         }
 
         waitForStart();
 
         telemetry.addData("Distance Sensor", drive.distanceSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
+
+        //* delay robot start
+        timer.reset();
+
+        try {
+            if (delay > 0) {
+                Thread.sleep(delay * 1000);
+            }
+        } catch (Exception e) {}
+
+        //* run middle path if sensor detects custom element
         if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 15 && drive.distanceSensor.getDistance(DistanceUnit.INCH) < 21) {
             switch (selectedAuto) {
                 case "bc":
@@ -251,6 +278,7 @@ public class PurplePixelPlace extends LinearOpMode {
                     break;
             }
         } else {
+            //* strafe to check for far orientation
             switch (selectedAuto) {
                 case "bc":
                     drive.followTrajectorySequence(bcStrafe);
@@ -266,8 +294,7 @@ public class PurplePixelPlace extends LinearOpMode {
                     break;
             }
 
-            telemetry.addData("Distance Sensor", drive.distanceSensor.getDistance(DistanceUnit.INCH));
-            telemetry.update();
+            //* run close/far path based on if the sensor detects custom element
             if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 15 && drive.distanceSensor.getDistance(DistanceUnit.INCH) < 21) {
                 switch (selectedAuto) {
                     case "bc":
@@ -301,8 +328,53 @@ public class PurplePixelPlace extends LinearOpMode {
             }
         }
 
+        //place one yellow pixel on the backboard
         placeYellowPixel(drive);
 
+        Storage.currentPose = drive.getPoseEstimate();
+
+        //* strafe paths (end)
+        TrajectorySequence blueStrafeLeft = drive.trajectorySequenceBuilder(new Pose2d(51.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
+                .lineTo(new Vector2d(51.00, 60.00))
+                .build();
+
+        TrajectorySequence blueStrafeRight = drive.trajectorySequenceBuilder(new Pose2d(51.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
+                .lineTo(new Vector2d(51.00, 12.00))
+                .build();
+
+        TrajectorySequence redStrafeLeft = drive.trajectorySequenceBuilder(new Pose2d(51.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
+                .lineTo(new Vector2d(51.00, -12.00))
+                .build();
+
+        TrajectorySequence redStrafeRight = drive.trajectorySequenceBuilder(new Pose2d(51.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
+                .lineTo(new Vector2d(51.00, -60.00))
+                .build();
+
+        if (Storage.currentPose.getY() > 0) {
+            switch (strafeSelector) {
+                case "left":
+                    drive.followTrajectorySequence(blueStrafeLeft);
+                    break;
+                case "right":
+                    drive.followTrajectorySequence(blueStrafeRight);
+                    break;
+                default:
+                    break;
+            }
+        } else if (Storage.currentPose.getY() < 0) {
+            switch (strafeSelector) {
+                case "left":
+                    drive.followTrajectorySequence(redStrafeLeft);
+                    break;
+                case "right":
+                    drive.followTrajectorySequence(redStrafeRight);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        Storage.currentPose = drive.getPoseEstimate();
         Pose2d poseEstimate = drive.getPoseEstimate();
 
         telemetry.clearAll();
@@ -318,6 +390,7 @@ public class PurplePixelPlace extends LinearOpMode {
         telemetry.update();
     }
 
+    //* method for placing a pixel on the backboard
     public void placeYellowPixel(Robot drive) {
         ElapsedTime timer = new ElapsedTime();
         timer.reset();

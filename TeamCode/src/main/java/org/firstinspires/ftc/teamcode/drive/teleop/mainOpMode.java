@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -103,19 +103,46 @@ public class mainOpMode extends LinearOpMode {
                 drive.holderServo.setPower(0);
             }
 
-            //* assign lift commands/soft-stops
+            //* automatic lift commands
+            if (gamepad1.right_bumper) {
+                drive.leftLiftMotor.setTargetPosition(2150);
+                drive.rightLiftMotor.setTargetPosition(2150);
+
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                drive.leftLiftMotor.setPower(1);
+                drive.rightLiftMotor.setPower(1);
+            } else if (gamepad1.left_bumper) {
+                drive.leftLiftMotor.setTargetPosition(0);
+                drive.rightLiftMotor.setTargetPosition(0);
+
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                drive.leftLiftMotor.setPower(1);
+                drive.rightLiftMotor.setPower(1);
+            }
+
+            //* manual lift commands/soft-stops
             if (gamepad1.right_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() <= 2150 && drive.rightLiftMotor.getCurrentPosition() <= 2150) {
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
                 drive.leftLiftMotor.setPower(gamepad1.right_trigger);
                 drive.rightLiftMotor.setPower(gamepad1.right_trigger);
             } else if (gamepad1.left_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() >= 0 && drive.rightLiftMotor.getCurrentPosition() >= 0) {
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
                 drive.leftLiftMotor.setPower(-gamepad1.left_trigger);
                 drive.rightLiftMotor.setPower(-gamepad1.left_trigger);
-            } else {
+            } else if (drive.leftLiftMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
                 drive.leftLiftMotor.setPower(0);
                 drive.rightLiftMotor.setPower(0);
             }
 
-            //* set arm position based on lift height
+            //* set arm position
 
             if (gamepad1.x && !xHeld) {
                 climberUp = !climberUp;
