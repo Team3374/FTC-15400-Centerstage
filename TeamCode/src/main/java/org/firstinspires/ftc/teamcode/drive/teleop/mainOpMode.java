@@ -9,7 +9,9 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Robot;
+import org.firstinspires.ftc.teamcode.drive.Storage;
 
 @TeleOp
 public class mainOpMode extends LinearOpMode {
@@ -38,7 +40,7 @@ public class mainOpMode extends LinearOpMode {
 //                break;
 //        }
 
-//        drive.setPoseEstimate(Storage.currentPose);
+        drive.setPoseEstimate(Storage.currentPose);
 
         //* Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -66,6 +68,7 @@ public class mainOpMode extends LinearOpMode {
 //            drive.update();
 
             //* assign drive commands (robot centric)
+
             drive.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
@@ -74,9 +77,15 @@ public class mainOpMode extends LinearOpMode {
                     )
             );
 
-            drive.update();
-
             Pose2d poseEstimate = drive.getPoseEstimate();
+
+//            if (poseEstimate.getX() <= 51.00) {
+//                DriveConstants.MAX_VEL = 30;
+//            } else {
+//                DriveConstants.MAX_VEL = 3;
+//            }
+
+            drive.update();
 
             //* assign intake/holder commands
             if (gamepad1.a && !gamepad1.right_bumper && !gamepad1.left_bumper) {
