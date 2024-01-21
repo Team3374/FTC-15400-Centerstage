@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.drive.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -16,7 +14,7 @@ import org.firstinspires.ftc.teamcode.drive.Storage;
 @TeleOp
 public class mainOpMode extends LinearOpMode {
 
-    //* instance variables (physical components):
+    //* instance variables:
     private ElapsedTime runtime = new ElapsedTime();
     private boolean climberUp = false;
     private boolean yHeld = false;
@@ -79,11 +77,11 @@ public class mainOpMode extends LinearOpMode {
 
             Pose2d poseEstimate = drive.getPoseEstimate();
 
-//            if (poseEstimate.getX() <= 51.00) {
-//                DriveConstants.MAX_VEL = 30;
-//            } else {
-//                DriveConstants.MAX_VEL = 3;
-//            }
+            if (poseEstimate.getX() <= 48.00) {
+                DriveConstants.MAX_VEL = 30;
+            } else {
+                DriveConstants.MAX_VEL = 3;
+            }
 
             drive.update();
 
@@ -99,46 +97,7 @@ public class mainOpMode extends LinearOpMode {
                 drive.holderServo.setPower(0);
             }
 
-            //* automatic lift commands
-            if (gamepad1.right_bumper) {
-                drive.leftLiftMotor.setTargetPosition(2150);
-                drive.rightLiftMotor.setTargetPosition(2150);
-
-                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                drive.leftLiftMotor.setPower(1);
-                drive.rightLiftMotor.setPower(1);
-            } else if (gamepad1.left_bumper) {
-                drive.leftLiftMotor.setTargetPosition(0);
-                drive.rightLiftMotor.setTargetPosition(0);
-
-                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                drive.leftLiftMotor.setPower(1);
-                drive.rightLiftMotor.setPower(1);
-            }
-
-            //* manual lift commands/soft-stops
-            if (gamepad1.right_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() <= 2150 && drive.rightLiftMotor.getCurrentPosition() <= 2150) {
-                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                drive.leftLiftMotor.setPower(gamepad1.right_trigger);
-                drive.rightLiftMotor.setPower(gamepad1.right_trigger);
-            } else if (gamepad1.left_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() >= 0 && drive.rightLiftMotor.getCurrentPosition() >= 0) {
-                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                drive.leftLiftMotor.setPower(-gamepad1.left_trigger);
-                drive.rightLiftMotor.setPower(-gamepad1.left_trigger);
-            } else if (drive.leftLiftMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
-                drive.leftLiftMotor.setPower(0);
-                drive.rightLiftMotor.setPower(0);
-            }
-
-            //* set arm position
+            //* manual arm position
 
             if (gamepad1.x && !xHeld) {
                 climberUp = !climberUp;
@@ -165,6 +124,48 @@ public class mainOpMode extends LinearOpMode {
 
             if (!gamepad1.x) {
                 xHeld = false;
+            }
+
+            //* automatic lift commands
+            if (gamepad1.right_bumper) {
+                drive.leftLiftMotor.setTargetPosition(2150);
+                drive.rightLiftMotor.setTargetPosition(2150);
+
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                drive.leftLiftMotor.setPower(1);
+                drive.rightLiftMotor.setPower(1);
+            } else if (gamepad1.left_bumper) {
+                drive.leftArmServo.setPosition(0.1);
+                drive.rightArmServo.setPosition(0.1);
+
+                drive.leftLiftMotor.setTargetPosition(0);
+                drive.rightLiftMotor.setTargetPosition(0);
+
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                drive.leftLiftMotor.setPower(1);
+                drive.rightLiftMotor.setPower(1);
+            }
+
+            //* manual lift commands/soft-stops
+            if (gamepad1.right_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() <= 2150 && drive.rightLiftMotor.getCurrentPosition() <= 2150) {
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                drive.leftLiftMotor.setPower(gamepad1.right_trigger);
+                drive.rightLiftMotor.setPower(gamepad1.right_trigger);
+            } else if (gamepad1.left_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() >= 0 && drive.rightLiftMotor.getCurrentPosition() >= 0) {
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                drive.leftLiftMotor.setPower(-gamepad1.left_trigger);
+                drive.rightLiftMotor.setPower(-gamepad1.left_trigger);
+            } else if (drive.leftLiftMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
+                drive.leftLiftMotor.setPower(0);
+                drive.rightLiftMotor.setPower(0);
             }
 
             //* assign airplane commands
