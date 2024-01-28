@@ -29,6 +29,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -97,6 +98,7 @@ public class Robot extends MecanumDrive {
     public Servo airplaneServo = null;
 
     public Rev2mDistanceSensor distanceSensor = null;
+    public TouchSensor holderSensor = null;
 
     public Robot(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -171,6 +173,7 @@ public class Robot extends MecanumDrive {
         airplaneServo = hardwareMap.get(Servo.class, "airplaneServo");
 
         distanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "distanceSensor");
+        holderSensor = hardwareMap.get(TouchSensor.class, "holder");
 
         //* set motor/servo direction:
         leftLiftMotor.setDirection(DcMotor.Direction.REVERSE);

@@ -1,9 +1,16 @@
 package org.firstinspires.ftc.teamcode.drive.teleop;
 
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.drive.Robot.getVelocityConstraint;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -16,6 +23,7 @@ public class mainOpMode extends LinearOpMode {
 
     //* instance variables:
     private ElapsedTime runtime = new ElapsedTime();
+
     private boolean climberUp = false;
     private boolean yHeld = false;
     private boolean xHeld = false;
@@ -66,22 +74,15 @@ public class mainOpMode extends LinearOpMode {
 //            drive.update();
 
             //* assign drive commands (robot centric)
-
-            drive.setWeightedDrivePower(
-                    new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x
-                    )
-            );
-
             Pose2d poseEstimate = drive.getPoseEstimate();
 
-            if (poseEstimate.getX() <= 48.00) {
-                DriveConstants.MAX_VEL = 30;
-            } else {
-                DriveConstants.MAX_VEL = 3;
-            }
+            drive.setWeightedDrivePower(
+                new Pose2d(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x
+                )
+            );
 
             drive.update();
 
@@ -126,10 +127,10 @@ public class mainOpMode extends LinearOpMode {
                 xHeld = false;
             }
 
-            //* automatic lift commands
+            //* automatic lift commands (with auto retract)
             if (gamepad1.right_bumper) {
-                drive.leftLiftMotor.setTargetPosition(2150);
-                drive.rightLiftMotor.setTargetPosition(2150);
+                drive.leftLiftMotor.setTargetPosition(2400);
+                drive.rightLiftMotor.setTargetPosition(2400);
 
                 drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -139,6 +140,8 @@ public class mainOpMode extends LinearOpMode {
             } else if (gamepad1.left_bumper) {
                 drive.leftArmServo.setPosition(0.1);
                 drive.rightArmServo.setPosition(0.1);
+
+                climberUp = false;
 
                 drive.leftLiftMotor.setTargetPosition(0);
                 drive.rightLiftMotor.setTargetPosition(0);
@@ -151,7 +154,7 @@ public class mainOpMode extends LinearOpMode {
             }
 
             //* manual lift commands/soft-stops
-            if (gamepad1.right_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() <= 2150 && drive.rightLiftMotor.getCurrentPosition() <= 2150) {
+            if (gamepad1.right_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() <= 2400 && drive.rightLiftMotor.getCurrentPosition() <= 2400) {
                 drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -192,6 +195,7 @@ public class mainOpMode extends LinearOpMode {
             telemetry.addData("Airplane Servo Position", drive.airplaneServo.getPosition());
             telemetry.addLine();
             telemetry.addData("Distance", drive.distanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Mag Sensor", drive.holderSensor.isPressed());
             telemetry.update();
         }
     }
