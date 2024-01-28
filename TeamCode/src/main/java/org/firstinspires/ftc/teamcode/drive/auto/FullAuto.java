@@ -15,8 +15,19 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 @Autonomous(name="Full Auto")
 public class FullAuto extends LinearOpMode {
 
-    //* create variable for blank auto
-    private String selectedAuto = "";
+    //* instance variables
+    // create variables for selected auto/end strafe
+    private String robotPosition = "";
+    private String strafeSelector = "";
+    private int autoIndex = 0;
+
+    //dPad-held variables
+    private boolean upHeld = false;
+    private boolean downHeld = false;
+
+    //create delay timer
+    private final ElapsedTime timer = new ElapsedTime();
+    int delay = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -161,95 +172,9 @@ public class FullAuto extends LinearOpMode {
                 .lineTo(new Vector2d(-48.00, -63.50))
                 .build();
 
-        //* create delay timer
-        ElapsedTime timer = new ElapsedTime();
-        int delay = 0;
-
-        //dPad held variables
-        boolean upHeld = false;
-        boolean downHeld = false;
-
-        //strafe variable
-        String strafeSelector = "";
-
+        //run the auto selector while in init
         while(opModeInInit()) {
-            //* autonomous selector
-            telemetry.addLine("Please choose from the following Autonomous programs:");
-            telemetry.addData("A", "Blue Close");
-            telemetry.addData("B", "Blue Far");
-            telemetry.addData("X", "Red Close");
-            telemetry.addData("Y", "Red Far");
-            telemetry.addLine();
-
-            //select path
-            if (gamepad1.a) {
-                selectedAuto = "bc";
-                drive.setPoseEstimate(new Pose2d(12, 63.50, Math.toRadians(-90.00)));
-            } else if (gamepad1.b) {
-                selectedAuto = "bf";
-                drive.setPoseEstimate(new Pose2d(-36, 63.50, Math.toRadians(-90.00)));
-            } else if (gamepad1.x) {
-                selectedAuto = "rc";
-                drive.setPoseEstimate(new Pose2d(12, -63.50, Math.toRadians(90.00)));
-            } else if (gamepad1.y) {
-                selectedAuto = "rf";
-                drive.setPoseEstimate(new Pose2d(-36, -63.50, Math.toRadians(90.00)));
-            }
-
-            //set delay
-            if (gamepad1.dpad_up && !upHeld) {
-                upHeld = true;
-                delay++;
-            } else if (gamepad1.dpad_down && delay > 0 && !downHeld) {
-                downHeld = true;
-                delay--;
-            }
-            if (!gamepad1.dpad_up) {
-                upHeld = false;
-            }
-            if (!gamepad1.dpad_down) {
-                downHeld = false;
-            }
-
-            //set strafe
-            if (gamepad1.dpad_left) {
-                strafeSelector = "left";
-            } else if (gamepad1.dpad_right) {
-                strafeSelector = "right";
-            }
-
-            switch (selectedAuto) {
-                case "bc":
-                    telemetry.addLine("Selected Auto: Blue Close");
-                    break;
-                case "bf":
-                    telemetry.addLine("Selected Auto: Blue Far");
-                    break;
-                case "rc":
-                    telemetry.addLine("Selected Auto: Red Close");
-                    break;
-                case "rf":
-                    telemetry.addLine("Selected Auto: Red Far");
-                    break;
-                default:
-
-                    telemetry.addLine("Selected Auto: None (Required)");
-                    break;
-            }
-
-            switch (strafeSelector) {
-                case "left":
-                    telemetry.addLine("Selected Strafe: Left");
-                    break;
-                case "right":
-                    telemetry.addLine("Selected Strafe: Right");
-                    break;
-                default:
-                    telemetry.addLine("Selected Strafe: None (Optional)");
-            }
-            telemetry.addLine();
-            telemetry.addLine("Current Delay is " + delay + " seconds");
-            telemetry.update();
+            autoSelector(drive);
         }
 
         waitForStart();
@@ -262,13 +187,15 @@ public class FullAuto extends LinearOpMode {
 
         try {
             if (delay > 0) {
-                Thread.sleep(delay * 1000);
+                Thread.sleep((long) delay * 1000);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         //* run middle path if sensor detects custom element
         if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 12 && drive.distanceSensor.getDistance(DistanceUnit.INCH) < 18) {
-            switch (selectedAuto) {
+            switch (robotPosition) {
                 case "bc":
                     drive.followTrajectorySequence(bcMiddle);
                     break;
@@ -284,7 +211,7 @@ public class FullAuto extends LinearOpMode {
             }
         } else {
             //* strafe to check for far orientation
-            switch (selectedAuto) {
+            switch (robotPosition) {
                 case "bc":
                     drive.followTrajectorySequence(bcStrafe);
                     break;
@@ -301,7 +228,7 @@ public class FullAuto extends LinearOpMode {
 
             //* run close/far path based on if the sensor detects custom element
             if (drive.distanceSensor.getDistance(DistanceUnit.INCH) > 12 && drive.distanceSensor.getDistance(DistanceUnit.INCH) < 18) {
-                switch (selectedAuto) {
+                switch (robotPosition) {
                     case "bc":
                         drive.followTrajectorySequence(bcFar);
                         break;
@@ -316,7 +243,7 @@ public class FullAuto extends LinearOpMode {
                         break;
                 }
             } else {
-                switch (selectedAuto) {
+                switch (robotPosition) {
                     case "bc":
                         drive.followTrajectorySequence(bcClose);
                         break;
@@ -334,9 +261,38 @@ public class FullAuto extends LinearOpMode {
         }
 
         //place one yellow pixel on the backboard
-        placeYellowPixel(drive);
+        placePixels(drive);
 
         Storage.currentPose = drive.getPoseEstimate();
+
+        //* extra pixel paths
+        TrajectorySequence bluePixel = drive.trajectorySequenceBuilder(new Pose2d(49.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
+                .setReversed(true)
+                .splineTo(new Vector2d(12.00,12.00), Math.toRadians(180))
+                .lineTo(new Vector2d(-60.00, 12.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(1))
+                .addTemporalMarker(() -> drive.holderServo.setPower(1))
+                .waitSeconds(2)
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .addTemporalMarker(() -> drive.holderServo.setPower(0))
+                .setReversed(false)
+                .lineTo(new Vector2d(12.00, 12.00))
+                .splineTo(new Vector2d(49.00, Storage.currentPose.getY()), Math.toRadians(0.00))
+                .build();
+
+        TrajectorySequence redPixel = drive.trajectorySequenceBuilder(new Pose2d(49.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
+                .setReversed(true)
+                .splineTo(new Vector2d(12.00,-12.00), Math.toRadians(180))
+                .lineTo(new Vector2d(-60.00, -12.00))
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(1))
+                .addTemporalMarker(() -> drive.holderServo.setPower(1))
+                .waitSeconds(2)
+                .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .addTemporalMarker(() -> drive.holderServo.setPower(0))
+                .setReversed(false)
+                .lineTo(new Vector2d(12.00, -12.00))
+                .splineTo(new Vector2d(49.00, Storage.currentPose.getY()), Math.toRadians(0.00))
+                .build();
 
         //* strafe paths (end)
         TrajectorySequence blueStrafeLeft = drive.trajectorySequenceBuilder(new Pose2d(49.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
@@ -356,6 +312,11 @@ public class FullAuto extends LinearOpMode {
                 .build();
 
         if (Storage.currentPose.getY() > 0) {
+            for (int count = 0; count < autoIndex; count++) {
+                drive.followTrajectorySequence(bluePixel);
+                placePixels(drive);
+            }
+
             switch (strafeSelector) {
                 case "left":
                     drive.followTrajectorySequence(blueStrafeLeft);
@@ -367,6 +328,11 @@ public class FullAuto extends LinearOpMode {
                     break;
             }
         } else if (Storage.currentPose.getY() < 0) {
+            for (int count = 0; count < autoIndex; count++) {
+                drive.followTrajectorySequence(redPixel);
+                placePixels(drive);
+            }
+
             switch (strafeSelector) {
                 case "left":
                     drive.followTrajectorySequence(redStrafeLeft);
@@ -383,7 +349,7 @@ public class FullAuto extends LinearOpMode {
         Pose2d poseEstimate = drive.getPoseEstimate();
 
         telemetry.clearAll();
-        telemetry.addData("Current Auto", selectedAuto);
+        telemetry.addData("Robot Starting Position", robotPosition);
         telemetry.addLine();
         telemetry.addData("x", poseEstimate.getX());
         telemetry.addData("y", poseEstimate.getY());
@@ -395,9 +361,11 @@ public class FullAuto extends LinearOpMode {
         telemetry.update();
     }
 
-    //* method for placing a pixel on the backboard
-    public void placeYellowPixel(Robot drive) {
-        ElapsedTime timer = new ElapsedTime();
+    /**
+     * method for placing held pixels on the backboard
+     * @param drive the main robot class
+     */
+    public void placePixels(Robot drive) {
         timer.reset();
 
         drive.leftLiftMotor.setTargetPosition(1375);
@@ -429,6 +397,10 @@ public class FullAuto extends LinearOpMode {
         tryLiftDown(drive);
     }
 
+    /**
+     * Recursive attempt to lower the lift
+     * @param drive the main robot class
+     */
     public void tryLiftDown (Robot drive) {
         if (drive.holderSensor.isPressed()) {
             drive.leftLiftMotor.setTargetPosition(0);
@@ -436,5 +408,130 @@ public class FullAuto extends LinearOpMode {
         } else {
             tryLiftDown(drive);
         }
+    }
+
+    /**
+     * Operator interface to set the robot's auto routine
+     * @param drive the main robot class
+     */
+    public void autoSelector (Robot drive) {
+        telemetry.addLine("Please choose from the following starting positions:");
+        telemetry.addData("A", "Blue Close");
+        telemetry.addData("B", "Blue Far");
+        telemetry.addData("X", "Red Close");
+        telemetry.addData("Y", "Red Far");
+        telemetry.addLine();
+        telemetry.addLine("Use bumpers to cycle through auto routines");
+        telemetry.addLine("Use dpad left/right to set end strafe");
+        telemetry.addLine("Use dpad up/down to set starting delay");
+
+        //select path
+        if (gamepad1.a) {
+            robotPosition = "bc";
+            drive.setPoseEstimate(new Pose2d(12, 63.50, Math.toRadians(-90.00)));
+        } else if (gamepad1.b) {
+            robotPosition = "bf";
+            drive.setPoseEstimate(new Pose2d(-36, 63.50, Math.toRadians(-90.00)));
+        } else if (gamepad1.x) {
+            robotPosition = "rc";
+            drive.setPoseEstimate(new Pose2d(12, -63.50, Math.toRadians(90.00)));
+        } else if (gamepad1.y) {
+            robotPosition = "rf";
+            drive.setPoseEstimate(new Pose2d(-36, -63.50, Math.toRadians(90.00)));
+        }
+
+        autoInputs();
+        selectorTelemetry();
+
+        telemetry.addData("Distance Sensor", drive.distanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.update();
+    }
+
+    /**
+     * Gamepad inputs for the auto selector
+     */
+    public void autoInputs() {
+        //set delay
+        if (gamepad1.dpad_up && !upHeld) {
+            upHeld = true;
+            delay++;
+        } else if (gamepad1.dpad_down && delay > 0 && !downHeld) {
+            downHeld = true;
+            delay--;
+        }
+        if (!gamepad1.dpad_up) {
+            upHeld = false;
+        }
+        if (!gamepad1.dpad_down) {
+            downHeld = false;
+        }
+
+        //set strafe
+        if (gamepad1.dpad_left) {
+            strafeSelector = "left";
+        } else if (gamepad1.dpad_right) {
+            strafeSelector = "right";
+        }
+
+        //set selected auto
+        if (gamepad1.right_bumper && autoIndex < 2) {
+            autoIndex++;
+        } else if (gamepad1.left_bumper && autoIndex > 0) {
+            autoIndex--;
+        } else if (gamepad1.right_bumper) {
+            autoIndex = 0;
+        } else if (gamepad1.left_bumper) {
+            autoIndex = 2;
+        }
+    }
+
+    /**
+     * Adds telemetry to the control hub based off of the current selections in the autonomous selector
+     */
+    public void selectorTelemetry() {
+        switch (robotPosition) {
+            case "bc":
+                telemetry.addLine("Robot Starting Position: Blue Close");
+                break;
+            case "bf":
+                telemetry.addLine("Robot Starting Position: Blue Far");
+                break;
+            case "rc":
+                telemetry.addLine("Robot Starting Position: Red Close");
+                break;
+            case "rf":
+                telemetry.addLine("Robot Starting Position: Red Far");
+                break;
+            default:
+
+                telemetry.addLine("Robot Starting Position: None (Required)");
+                break;
+        }
+
+        switch (autoIndex) {
+            case 0:
+                telemetry.addLine("Auto Routine: 2 Pixels");
+                break;
+            case 1:
+                telemetry.addLine("Auto Routine: 2+2 (Unfinished)");
+                break;
+            case 2:
+                telemetry.addLine("Auto Routine: 2+4 (Unfinished)");
+                break;
+        }
+
+        switch (strafeSelector) {
+            case "left":
+                telemetry.addLine("Selected Strafe: Left");
+                break;
+            case "right":
+                telemetry.addLine("Selected Strafe: Right");
+                break;
+            default:
+                telemetry.addLine("Selected Strafe: None (Optional)");
+        }
+
+        telemetry.addLine();
+        telemetry.addLine("Current Delay is " + delay + " seconds");
     }
 }
