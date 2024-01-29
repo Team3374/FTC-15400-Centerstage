@@ -19,21 +19,16 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -79,7 +74,7 @@ public class Robot extends MecanumDrive {
     public DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
 
-    private IMU imu;
+//    private IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
     private List<Integer> lastEncPositions = new ArrayList<>();
@@ -87,18 +82,18 @@ public class Robot extends MecanumDrive {
 
     //* ADD ALL CUSTOM COMPONENTS HERE
 
-    public DcMotor leftLiftMotor = null;
-    public DcMotor rightLiftMotor = null;
+    public DcMotor leftLiftMotor;
+    public DcMotor rightLiftMotor;
 
-    public DcMotor intakeMotor = null;
-    public CRServo holderServo = null;
-    public Servo leftArmServo = null;
-    public Servo rightArmServo = null;
+    public DcMotor intakeMotor;
+    public CRServo holderServo;
+    public Servo leftArmServo;
+    public Servo rightArmServo;
 
-    public Servo airplaneServo = null;
+    public Servo airplaneServo;
 
-    public Rev2mDistanceSensor distanceSensor = null;
-    public TouchSensor holderSensor = null;
+    public Rev2mDistanceSensor distanceSensor;
+    public TouchSensor holderSensor;
 
     public Robot(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -114,9 +109,7 @@ public class Robot extends MecanumDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        // TODO: ASK ERIC
-
-        // TODO: adjust the names of the following hardware devices to match your configuration
+        //adjust the names of the following hardware devices to match your configuration
 //        imu = hardwareMap.get(IMU.class, "imu");
 //        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
 //                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
@@ -145,12 +138,12 @@ public class Robot extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        // TODO: reverse any motors using DcMotor.setDirection()
+        //* reverse any motors using DcMotor.setDirection()
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
-        // TODO: if desired, use setLocalizer() to change the localization method
+        //if desired, use setLocalizer() to change the localization method
         setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
@@ -158,7 +151,7 @@ public class Robot extends MecanumDrive {
                 lastEncPositions, lastEncVels, lastTrackingEncPositions, lastTrackingEncVels
         );
 
-        //TODO: CODE ALL CUSTOM COMPONENTS HERE:
+        //* CODE ALL CUSTOM COMPONENTS HERE:
 
         //* control/expansion hub hardware map (configuration):
 
@@ -214,9 +207,9 @@ public class Robot extends MecanumDrive {
         return new TrajectoryBuilder(startPose, reversed, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
     }
 
-    public TrajectoryBuilder trajectoryBuilder(Pose2d startPose, double startHeading) {
-        return new TrajectoryBuilder(startPose, startHeading, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
-    }
+//    public TrajectoryBuilder trajectoryBuilder(Pose2d startPose, double startHeading) {
+//        return new TrajectoryBuilder(startPose, startHeading, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
+//    }
 
     public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
         return new TrajectorySequenceBuilder(
@@ -261,9 +254,9 @@ public class Robot extends MecanumDrive {
         waitForIdle();
     }
 
-    public Pose2d getLastError() {
-        return trajectorySequenceRunner.getLastPoseError();
-    }
+//    public Pose2d getLastError() {
+//        return trajectorySequenceRunner.getLastPoseError();
+//    }
 
     public void update() {
         updatePoseEstimate();

@@ -518,6 +518,9 @@ public class FullAuto extends LinearOpMode {
             case 2:
                 telemetry.addLine("Auto Routine: 2+4 (Unfinished)");
                 break;
+            default:
+                telemetry.addLine("ERROR: AUTO ROUTINE NOT FOUND");
+                break;
         }
 
         switch (strafeSelector) {

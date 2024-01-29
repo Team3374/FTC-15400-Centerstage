@@ -1,20 +1,12 @@
 package org.firstinspires.ftc.teamcode.drive.teleop;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.drive.Robot.getVelocityConstraint;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.drive.Storage;
 
@@ -22,7 +14,7 @@ import org.firstinspires.ftc.teamcode.drive.Storage;
 public class mainOpMode extends LinearOpMode {
 
     //* instance variables:
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
     private boolean climberUp = false;
     private boolean yHeld = false;
@@ -137,7 +129,7 @@ public class mainOpMode extends LinearOpMode {
 
                 drive.leftLiftMotor.setPower(1);
                 drive.rightLiftMotor.setPower(1);
-            } else if (gamepad1.left_bumper) {
+            } else if (gamepad1.left_bumper && drive.leftLiftMotor.getCurrentPosition() > 2000) { //TODO: CAN CHECK, BUT IS RISKY
                 drive.leftArmServo.setPosition(0.1);
                 drive.rightArmServo.setPosition(0.1);
 
@@ -160,7 +152,12 @@ public class mainOpMode extends LinearOpMode {
 
                 drive.leftLiftMotor.setPower(gamepad1.right_trigger);
                 drive.rightLiftMotor.setPower(gamepad1.right_trigger);
-            } else if (gamepad1.left_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() >= 0 && drive.rightLiftMotor.getCurrentPosition() >= 0) {
+            } else if (
+                    gamepad1.left_trigger > 0.05 && (
+                    (drive.leftLiftMotor.getCurrentPosition() >= 1500 && drive.rightLiftMotor.getCurrentPosition() >= 1500) //TODO: CHECK BY SPINNING IN OPMODE
+                    || (drive.leftLiftMotor.getCurrentPosition() >= 0 && drive.rightLiftMotor.getCurrentPosition() >= 0 && drive.holderSensor.isPressed())
+                    )
+            ) {
                 drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -179,7 +176,7 @@ public class mainOpMode extends LinearOpMode {
             }
 
             //* telemetry
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Status", "Run Time: " + runtime);
             telemetry.addLine();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
@@ -195,7 +192,7 @@ public class mainOpMode extends LinearOpMode {
             telemetry.addData("Airplane Servo Position", drive.airplaneServo.getPosition());
             telemetry.addLine();
             telemetry.addData("Distance", drive.distanceSensor.getDistance(DistanceUnit.INCH));
-            telemetry.addData("Mag Sensor", drive.holderSensor.isPressed());
+            telemetry.addData("Holder Sensor", drive.holderSensor.isPressed());
             telemetry.update();
         }
     }
