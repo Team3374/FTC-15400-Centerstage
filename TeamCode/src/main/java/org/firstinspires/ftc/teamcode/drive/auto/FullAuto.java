@@ -16,6 +16,9 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 public class FullAuto extends LinearOpMode {
 
     //* instance variables
+    //TODO: ELI, IF JOE WANTS THE ROBOT CLOSER TO THE WALLS FOR THE 2+2/2+4 AUTOS, CHANGE THIS NUMBER:
+    private final double inchesFromWall = 1.5;
+
     // create variables for selected auto/end strafe
     private String robotPosition = "";
     private String strafeSelector = "";
@@ -269,7 +272,7 @@ public class FullAuto extends LinearOpMode {
         TrajectorySequence bluePixel = drive.trajectorySequenceBuilder(new Pose2d(49.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
                 .setReversed(true)
                 .splineTo(new Vector2d(12.00,12.00), Math.toRadians(180))
-                .lineTo(new Vector2d(-60.00, 12.00))
+                .lineTo(new Vector2d((-72 + inchesFromWall), 12.00))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(1))
                 .addTemporalMarker(() -> drive.holderServo.setPower(1))
                 .waitSeconds(2)
@@ -283,7 +286,7 @@ public class FullAuto extends LinearOpMode {
         TrajectorySequence redPixel = drive.trajectorySequenceBuilder(new Pose2d(49.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
                 .setReversed(true)
                 .splineTo(new Vector2d(12.00,-12.00), Math.toRadians(180))
-                .lineTo(new Vector2d(-60.00, -12.00))
+                .lineTo(new Vector2d((-72 + inchesFromWall), -12.00))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(1))
                 .addTemporalMarker(() -> drive.holderServo.setPower(1))
                 .waitSeconds(2)
