@@ -516,10 +516,10 @@ public class FullAuto extends LinearOpMode {
                 telemetry.addLine("Auto Routine: 2 Pixels");
                 break;
             case 1:
-                telemetry.addLine("Auto Routine: 2+2 (Unfinished)");
+                telemetry.addLine("Auto Routine: 2+2");
                 break;
             case 2:
-                telemetry.addLine("Auto Routine: 2+4 (Unfinished)");
+                telemetry.addLine("Auto Routine: 2+4");
                 break;
             default:
                 telemetry.addLine("ERROR: AUTO ROUTINE NOT FOUND");
