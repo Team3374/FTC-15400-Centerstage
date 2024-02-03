@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.drive.Storage;
 
@@ -67,6 +68,12 @@ public class mainOpMode extends LinearOpMode {
 
             //* assign drive commands (robot centric)
             Pose2d poseEstimate = drive.getPoseEstimate();
+
+            if (poseEstimate.getX() <= 46) {
+                DriveConstants.MAX_VEL = 55;
+            } else {
+                DriveConstants.MAX_VEL = 20;
+            }
 
             drive.setWeightedDrivePower(
                 new Pose2d(
