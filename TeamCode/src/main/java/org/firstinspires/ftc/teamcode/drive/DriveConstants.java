@@ -65,9 +65,9 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 55;//30;
-    public static double MAX_ACCEL = 55;//30;
-    public static double MAX_ANG_VEL = 4.5;//3.363;
+    public static double MAX_VEL = 55;//30; //TODO: use the max vel tuner to find abs. max
+    public static double MAX_ACCEL = 55;//30; //TODO: Ask eric/wes what the think about tuning this, check road runner docs?
+    public static double MAX_ANG_VEL = 4.5;//TODO: use the max ang velocity tuner to find absolute max (switch from recommended)
     public static double MAX_ANG_ACCEL = Math.toRadians(60);
 
     /*
