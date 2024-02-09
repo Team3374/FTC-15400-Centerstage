@@ -89,6 +89,7 @@ public class FullAuto extends LinearOpMode {
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-0.5))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
+                .lineToSplineHeading(new Pose2d(40.00, 43.00, Math.toRadians(0.00)))
                 .splineTo(new Vector2d(51.00, 42.00), Math.toRadians(0.00))
                 .build();
 
@@ -110,7 +111,8 @@ public class FullAuto extends LinearOpMode {
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-0.5))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
-                .splineTo(new Vector2d(51.00, -42.00), Math.toRadians(360.00))
+                .lineToSplineHeading(new Pose2d(40.00, -43.00, Math.toRadians(360.00)))
+                .splineTo(new Vector2d(51.00, -42.00), Math.toRadians(0.00))
                 .build();
 
         TrajectorySequence rfFar = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(450.00)))
@@ -133,7 +135,8 @@ public class FullAuto extends LinearOpMode {
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-0.5))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
-                .splineTo(new Vector2d(51.00, 30.00), Math.toRadians(0.00))
+                .lineToSplineHeading(new Pose2d(40.00, 30.00, Math.toRadians(0.00)))
+                .lineTo(new Vector2d(51.00, 30.00))
                 .build();
 
 
@@ -153,7 +156,8 @@ public class FullAuto extends LinearOpMode {
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-0.5))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
-                .splineTo(new Vector2d(51.00, -30.00), Math.toRadians(360.00))
+                .lineToSplineHeading(new Pose2d(40.00, -30.00, Math.toRadians(360.00)))
+                .lineTo(new Vector2d(51.00, -30.00))
                 .build();
 
 
