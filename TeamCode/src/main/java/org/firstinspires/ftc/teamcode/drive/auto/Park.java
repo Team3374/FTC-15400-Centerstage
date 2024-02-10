@@ -18,25 +18,25 @@ public class Park extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot drive = new Robot(hardwareMap);
 
-        TrajectorySequence bfpPath = drive.trajectorySequenceBuilder(new Pose2d(-36, 63.50, Math.toRadians(-90.00)))
+        TrajectorySequence bfPark = drive.trajectorySequenceBuilder(new Pose2d(-36, 63.50, Math.toRadians(-90.00)))
                 .splineToSplineHeading(new Pose2d(-29.72, 38.03, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .lineTo(new Vector2d(22.36, 38.41))
                 .lineToSplineHeading(new Pose2d(48.79, 37.84, Math.toRadians(180.00)))
                 .build();
 
-        TrajectorySequence bcpPath = drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(270.00)))
+        TrajectorySequence bcPark = drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(270.00)))
                 .splineTo(new Vector2d(29.54, 57.66), Math.toRadians(370.79))
                 .splineTo(new Vector2d(59.17, 60.49), Math.toRadians(360.00))
                 .build();
 
 
-        TrajectorySequence rfpPath = drive.trajectorySequenceBuilder(new Pose2d(-36, -63.50, Math.toRadians(90.00)))
+        TrajectorySequence rfPark = drive.trajectorySequenceBuilder(new Pose2d(-36, -63.50, Math.toRadians(90.00)))
                 .splineToSplineHeading(new Pose2d(-29.72, -38.03, Math.toRadians(0.00)), Math.toRadians(0.00))
                 .lineTo(new Vector2d(22.36, -38.41))
                 .lineToSplineHeading(new Pose2d(48.79, -37.84, Math.toRadians(180.00)))
                 .build();
 
-        TrajectorySequence rcpPath = drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
+        TrajectorySequence rcPark = drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
                 .splineTo(new Vector2d(29.54, -57.66), Math.toRadians(-10.79))
                 .splineTo(new Vector2d(59.17, -60.49), Math.toRadians(0.00))
                 .build();
@@ -52,7 +52,7 @@ public class Park extends LinearOpMode {
             if (gamepad1.a) {
                 selectedAuto = "bcp";
 
-                drive.setPoseEstimate(bcpPath.start());
+                drive.setPoseEstimate(bcPark.start());
 
                 telemetry.clearAll();
                 telemetry.addLine("Please choose from the following Autonomous programs:");
@@ -66,7 +66,7 @@ public class Park extends LinearOpMode {
             } else if (gamepad1.b) {
                 selectedAuto = "bfp";
 
-                drive.setPoseEstimate(bfpPath.start());
+                drive.setPoseEstimate(bfPark.start());
 
                 telemetry.clearAll();
                 telemetry.addLine("Please choose from the following Autonomous programs:");
@@ -80,7 +80,7 @@ public class Park extends LinearOpMode {
             } else if (gamepad1.x) {
                 selectedAuto = "rcp";
 
-                drive.setPoseEstimate(rcpPath.start());
+                drive.setPoseEstimate(rcPark.start());
 
                 telemetry.clearAll();
                 telemetry.addLine("Please choose from the following Autonomous programs:");
@@ -94,7 +94,7 @@ public class Park extends LinearOpMode {
             } else if (gamepad1.y) {
                 selectedAuto = "rfp";
 
-                drive.setPoseEstimate(rfpPath.start());
+                drive.setPoseEstimate(rfPark.start());
 
                 telemetry.clearAll();
                 telemetry.addLine("Please choose from the following Autonomous programs:");
@@ -112,19 +112,19 @@ public class Park extends LinearOpMode {
 
         switch (selectedAuto) {
             case "bcp":
-                drive.followTrajectorySequence(bcpPath);
+                drive.followTrajectorySequence(bcPark);
                 Storage.currentColor = "blue";
                 break;
             case "bfp":
-                drive.followTrajectorySequence(bfpPath);
+                drive.followTrajectorySequence(bfPark);
                 Storage.currentColor = "blue";
                 break;
             case "rcp":
-                drive.followTrajectorySequence(rcpPath);
+                drive.followTrajectorySequence(rcPark);
                 Storage.currentColor = "red";
                 break;
             case "rfp":
-                drive.followTrajectorySequence(rfpPath);
+                drive.followTrajectorySequence(rfPark);
                 Storage.currentColor = "blue";
                 break;
         }
