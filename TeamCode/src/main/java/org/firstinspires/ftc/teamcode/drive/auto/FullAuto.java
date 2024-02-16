@@ -293,7 +293,7 @@ public class FullAuto extends LinearOpMode {
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-0.5))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
-                .lineTo(new Vector2d(-52.00, 24.00))
+                .lineTo(new Vector2d(-52.00, -24.00))
                 .lineTo(new Vector2d(-52.00, -36.00))
                 .lineTo(new Vector2d(0.00, -36.00))
                 .lineToSplineHeading(new Pose2d(36.00, -36.00, Math.toRadians(0.00)))
@@ -330,7 +330,7 @@ public class FullAuto extends LinearOpMode {
         rcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(90.00)))
                 .lineToSplineHeading(new Pose2d(23.00, -44.00, Math.toRadians(-90.00)))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-0.5))
-                .lineTo(new Vector2d(23.00, 46.00))
+                .lineTo(new Vector2d(23.00, -46.00))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(0))
                 .lineToSplineHeading(new Pose2d(40.00, -42.00, Math.toRadians(0.00)))
                 .lineTo(new Vector2d(51.00, -42.00))
@@ -363,7 +363,7 @@ public class FullAuto extends LinearOpMode {
                 .build();
 
         bfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(-48.00, 29.00, Math.toRadians(180.00)))
+                .lineToSplineHeading(new Pose2d(-48.00, 30.00, Math.toRadians(180.00)))
                 .lineTo(new Vector2d(-36.00, 30.00))
                 .addTemporalMarker(() -> drive.intakeMotor.setPower(-1))
                 .lineTo(new Vector2d(-48.00, 30.00))
