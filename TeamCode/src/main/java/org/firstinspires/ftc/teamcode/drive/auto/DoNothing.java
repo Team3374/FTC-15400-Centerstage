@@ -87,20 +87,7 @@ public class DoNothing extends LinearOpMode {
 
         waitForStart();
 
-        switch (selectedPosition) {
-            case "bc":
-                Storage.currentColor = "blue";
-                break;
-            case "bf":
-                Storage.currentColor = "blue";
-                break;
-            case "rc":
-                Storage.currentColor = "red";
-                break;
-            case "rf":
-                Storage.currentColor = "blue";
-                break;
-        }
+        Storage.currentColor = "none";
 
         Storage.currentPose = drive.getPoseEstimate();
         Pose2d poseEstimate = drive.getPoseEstimate();

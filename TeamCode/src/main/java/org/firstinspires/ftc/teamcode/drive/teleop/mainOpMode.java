@@ -52,11 +52,16 @@ public class mainOpMode extends LinearOpMode {
                     Storage.currentPose.getX(),
                     Storage.currentPose.getY(),
                     Math.toRadians(90));
-        } else {
+        } else if (Storage.currentColor.equals("red")) {
             poseEstimate = new Pose2d(
                     Storage.currentPose.getX(),
                     Storage.currentPose.getY(),
                     Math.toRadians(-90));
+        } else {
+            poseEstimate = new Pose2d(
+                    Storage.currentPose.getX(),
+                    Storage.currentPose.getY(),
+                    Math.toRadians(0));
         }
 
         drive.setPoseEstimate(poseEstimate);
