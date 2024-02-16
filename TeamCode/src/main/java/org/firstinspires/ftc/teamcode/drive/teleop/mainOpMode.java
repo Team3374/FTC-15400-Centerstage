@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.drive.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.drive.Storage;
@@ -16,6 +16,8 @@ public class mainOpMode extends LinearOpMode {
 
     //* instance variables:
     private final ElapsedTime runtime = new ElapsedTime();
+
+    private Pose2d poseEstimate;
 
     private boolean climberUp = false;
     private boolean yHeld = false;
@@ -39,55 +41,85 @@ public class mainOpMode extends LinearOpMode {
 //                break;
 //        }
 
-        drive.setPoseEstimate(Storage.currentPose);
-
         //* Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         waitForStart();
 
+        if (Storage.currentColor.equals("blue")) {
+            poseEstimate = new Pose2d(
+                    Storage.currentPose.getX(),
+                    Storage.currentPose.getY(),
+                    Math.toRadians(90));
+        } else {
+            poseEstimate = new Pose2d(
+                    Storage.currentPose.getX(),
+                    Storage.currentPose.getY(),
+                    Math.toRadians(-90));
+        }
+
+        drive.setPoseEstimate(poseEstimate);
+
         while (!isStopRequested()) {
-//            //* assign drive commands (field centric)
-//            Pose2d poseEstimate = drive.getPoseEstimate();
-//
-//            Vector2d input = new Vector2d(
-//                    -gamepad1.left_stick_y,
-//                    -gamepad1.left_stick_x
-//            ).rotated(-poseEstimate.getHeading());
-//
-//            drive.setWeightedDrivePower(
-//                    new Pose2d(
-//                            input.getX(),
-//                            input.getY(),
-//                            -gamepad1.right_stick_x
-//                    )
-//            );
-//
-//            drive.update();
+            //* assign drive commands (field centric)
+            poseEstimate = drive.getPoseEstimate();
 
-            //* assign drive commands (robot centric)
-            Pose2d poseEstimate = drive.getPoseEstimate();
+            Vector2d input = new Vector2d(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x
+            ).rotated(-poseEstimate.getHeading());
 
-            if (poseEstimate.getX() <= 46) {
+            if (poseEstimate.getY() < -28 && input.getX() > -0.75 && Storage.currentColor.equals("red")) {
                 drive.setWeightedDrivePower(
                         new Pose2d(
-                                -gamepad1.left_stick_y,
-                                -gamepad1.left_stick_x,
-                                -gamepad1.right_stick_x
+                                input.getX() * 0.3,
+                                input.getY() * 0.5,
+                                -gamepad1.right_stick_x * 0.3
+                        )
+                );
+            } else if (poseEstimate.getY() > 28 && input.getX() > -0.75 && Storage.currentColor.equals("blue")) {
+                drive.setWeightedDrivePower(
+                        new Pose2d(
+                                input.getX() * 0.3,
+                                input.getY() * 0.5,
+                                -gamepad1.right_stick_x * 0.3
                         )
                 );
             } else {
                 drive.setWeightedDrivePower(
                         new Pose2d(
-                                -gamepad1.left_stick_y * 0.3,
-                                -gamepad1.left_stick_x * 0.5,
-                                -gamepad1.right_stick_x * 0.3
+                                input.getX(),
+                                input.getY(),
+                                -gamepad1.right_stick_x
                         )
                 );
             }
 
             drive.update();
+
+//            //* assign drive commands (robot centric)
+//            Pose2d poseEstimate = drive.getPoseEstimate();
+//
+//            if (poseEstimate.getX() <= 46) {
+//                drive.setWeightedDrivePower(
+//                        new Pose2d(
+//                                -gamepad1.left_stick_y,
+//                                -gamepad1.left_stick_x,
+//                                -gamepad1.right_stick_x
+//                        )
+//                );
+//            } else {
+//                drive.setWeightedDrivePower(
+//                        new Pose2d(
+//                                -gamepad1.left_stick_y * 0.3,
+//                                -gamepad1.left_stick_x * 0.5,
+//                                -gamepad1.right_stick_x * 0.3
+//                        )
+//                );
+//            }
+
+//            drive.update();
 
             //* assign intake/holder commands
             if (gamepad1.a && !gamepad1.right_bumper && !gamepad1.left_bumper) {
@@ -202,7 +234,6 @@ public class mainOpMode extends LinearOpMode {
             telemetry.addLine();
             telemetry.addData("Airplane Servo Position", drive.airplaneServo.getPosition());
             telemetry.addLine();
-            telemetry.addData("Distance", drive.distanceSensor.getDistance(DistanceUnit.INCH));
             telemetry.addData("Holder Sensor", drive.holderSensor.isPressed());
             telemetry.update();
         }
