@@ -91,6 +91,14 @@ public class mainOpMode extends LinearOpMode {
                                 -gamepad1.right_stick_x * 0.3
                         )
                 );
+            } else if (poseEstimate.getX() > 49 && input.getX() > -0.75 && Storage.currentColor.equals("none")) {
+                drive.setWeightedDrivePower(
+                        new Pose2d(
+                                input.getX() * 0.3,
+                                input.getY() * 0.5,
+                                -gamepad1.right_stick_x * 0.3
+                        )
+                );
             } else {
                 drive.setWeightedDrivePower(
                         new Pose2d(
