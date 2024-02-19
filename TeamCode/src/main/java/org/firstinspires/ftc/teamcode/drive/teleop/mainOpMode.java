@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Robot;
 import org.firstinspires.ftc.teamcode.drive.Storage;
 
@@ -17,8 +16,6 @@ public class mainOpMode extends LinearOpMode {
     //* instance variables:
     private final ElapsedTime runtime = new ElapsedTime();
 
-    private Pose2d poseEstimate;
-
     private boolean climberUp = false;
     private boolean yHeld = false;
     private boolean xHeld = false;
@@ -26,11 +23,13 @@ public class mainOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         //Import Road Runner Drivetrain
         Robot drive = new Robot(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        drive.rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drive.leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 //        switch (Storage.currentColor) {
 //            case "blue":
@@ -46,6 +45,9 @@ public class mainOpMode extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+
+        //* set pose estimate based on starting location
+        Pose2d poseEstimate;
 
         if (Storage.currentColor.equals("blue")) {
             poseEstimate = new Pose2d(
@@ -67,7 +69,7 @@ public class mainOpMode extends LinearOpMode {
         drive.setPoseEstimate(poseEstimate);
 
         while (!isStopRequested()) {
-            //* assign drive commands (field centric)
+            //* assign drive commands (field centric) w/ backboard slow down
             poseEstimate = drive.getPoseEstimate();
 
             Vector2d input = new Vector2d(
@@ -84,14 +86,6 @@ public class mainOpMode extends LinearOpMode {
                         )
                 );
             } else if (poseEstimate.getY() > 28 && input.getX() > -0.75 && Storage.currentColor.equals("blue")) {
-                drive.setWeightedDrivePower(
-                        new Pose2d(
-                                input.getX() * 0.3,
-                                input.getY() * 0.5,
-                                -gamepad1.right_stick_x * 0.3
-                        )
-                );
-            } else if (poseEstimate.getX() > 49 && input.getX() > -0.75 && Storage.currentColor.equals("none")) {
                 drive.setWeightedDrivePower(
                         new Pose2d(
                                 input.getX() * 0.3,
@@ -134,6 +128,13 @@ public class mainOpMode extends LinearOpMode {
 
 //            drive.update();
 
+            //* zero robot position, removes backboard limiter
+            if (gamepad2.a) {
+                poseEstimate = new Pose2d(0, 0, 0);
+                drive.setPoseEstimate(new Pose2d(0, 0, 0));
+                Storage.currentColor = "none";
+            }
+
             //* assign intake/holder commands
             if (gamepad1.a && !gamepad1.right_bumper && !gamepad1.left_bumper) {
                 drive.intakeMotor.setPower(1);
@@ -147,7 +148,6 @@ public class mainOpMode extends LinearOpMode {
             }
 
             //* manual arm position
-
             if (gamepad1.x && !xHeld) {
                 climberUp = !climberUp;
                 xHeld = true;
@@ -176,16 +176,16 @@ public class mainOpMode extends LinearOpMode {
             }
 
             //* automatic lift commands (with auto retract)
-            if (gamepad1.right_bumper) {
-                drive.leftLiftMotor.setTargetPosition(2400);
-                drive.rightLiftMotor.setTargetPosition(2400);
+            if (gamepad1.right_bumper) { //goes to climb height
+                drive.leftLiftMotor.setTargetPosition(1750);
+                drive.rightLiftMotor.setTargetPosition(1750);
 
                 drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 drive.leftLiftMotor.setPower(1);
                 drive.rightLiftMotor.setPower(1);
-            } else if (gamepad1.left_bumper && drive.leftLiftMotor.getCurrentPosition() > 2000) { //TODO: CAN CHECK, BUT IS RISKY
+            } else if (gamepad1.left_bumper && drive.rightLiftMotor.getCurrentPosition() > 1400) { //climber down and holder in
                 drive.leftArmServo.setPosition(0.1);
                 drive.rightArmServo.setPosition(0.1);
 
@@ -202,7 +202,7 @@ public class mainOpMode extends LinearOpMode {
             }
 
             //* manual lift commands/soft-stops
-            if (gamepad1.right_trigger > 0.05 && drive.leftLiftMotor.getCurrentPosition() <= 2400 && drive.rightLiftMotor.getCurrentPosition() <= 2400) {
+            if (gamepad1.right_trigger > 0.05 && drive.rightLiftMotor.getCurrentPosition() <= 2400) { //lift up
                 drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -210,16 +210,33 @@ public class mainOpMode extends LinearOpMode {
                 drive.rightLiftMotor.setPower(gamepad1.right_trigger);
             } else if (
                     gamepad1.left_trigger > 0.05 && (
-                    (drive.leftLiftMotor.getCurrentPosition() >= 1500 && drive.rightLiftMotor.getCurrentPosition() >= 1500) //TODO: CHECK BY SPINNING IN OPMODE
+                    (drive.leftLiftMotor.getCurrentPosition() >= 1500 && drive.rightLiftMotor.getCurrentPosition() >= 1500)
                     || (drive.leftLiftMotor.getCurrentPosition() >= 0 && drive.rightLiftMotor.getCurrentPosition() >= 0 && drive.holderSensor.isPressed())
-                    )
-            ) {
+                    )) { //lift down
                 drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                 drive.leftLiftMotor.setPower(-gamepad1.left_trigger);
                 drive.rightLiftMotor.setPower(-gamepad1.left_trigger);
-            } else if (drive.leftLiftMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
+            } else if (gamepad2.right_trigger > 0.05) { //lift up override
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                drive.leftLiftMotor.setPower(gamepad2.right_trigger);
+                drive.rightLiftMotor.setPower(gamepad2.right_trigger);
+
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            } else if (gamepad2.left_trigger > 0.05) { //lift down override
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                drive.leftLiftMotor.setPower(-gamepad2.left_trigger);
+                drive.rightLiftMotor.setPower(-gamepad2.left_trigger);
+
+                drive.leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                drive.rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            } else if (drive.leftLiftMotor.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) { //stop lift
                 drive.leftLiftMotor.setPower(0);
                 drive.rightLiftMotor.setPower(0);
             }
