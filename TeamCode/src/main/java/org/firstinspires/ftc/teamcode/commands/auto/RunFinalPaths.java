@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.commands.auto;
 
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 
-import org.firstinspires.ftc.teamcode.auto.FullAuto;
+import org.firstinspires.ftc.teamcode.opmode.auto.FullAuto;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Holder;
@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.Drive;
 import org.firstinspires.ftc.teamcode.util.Storage;
 
 public class RunFinalPaths extends SequentialCommandGroup {
-    public RunFinalPaths(FullAuto auto, Drive drive, Lift lift, Arm arm, Holder holder, FullAuto.RobotPosition robotPosition, int autoIndex) {
-        addRequirements(drive);
+    public RunFinalPaths(FullAuto auto, Drive drive, Lift lift, Arm arm, Holder holder, int autoIndex) {
+        addRequirements(drive, lift, arm, holder);
 
         if (Storage.currentPose.getY() > 0) {
             for (int count = 0; count < autoIndex; count++) {

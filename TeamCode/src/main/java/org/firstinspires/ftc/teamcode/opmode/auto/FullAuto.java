@@ -1,19 +1,16 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.opmode.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.auto.PlacePixelCommand;
 import org.firstinspires.ftc.teamcode.commands.auto.RunFinalPaths;
 import org.firstinspires.ftc.teamcode.commands.auto.RunFirstPaths;
@@ -25,7 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 import org.firstinspires.ftc.teamcode.util.Storage;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.util.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name="Full Auto")
 public class FullAuto extends LinearOpMode {
@@ -96,7 +93,7 @@ public class FullAuto extends LinearOpMode {
 
         //*run the auto selector while in init
         while(opModeInInit() && !isStopRequested()) {
-            autoSelector(drive);
+            autoSelector();
         }
 
         //set robot distance from wall when intaking extra pixels
@@ -110,12 +107,12 @@ public class FullAuto extends LinearOpMode {
                     new PlacePixelCommand(lift, arm, holder, 1450, 0.5),
                     new InstantCommand(() -> Storage.currentPose = drive.getPoseEstimate()),
                     new InstantCommand(() -> buildFinalPaths(inchesFromWall)),
-                    new RunFinalPaths(this, drive, lift, arm, holder, robotPosition, autoIndex),
+                    new RunFinalPaths(this, drive, lift, arm, holder, autoIndex),
                     new InstantCommand(() -> {
                         if (robotPosition == RobotPosition.BLUE_CLOSE || robotPosition == RobotPosition.BLUE_FAR) {
-                            Storage.currentColor = "blue";
+                            Storage.currentColor = Storage.CurrentColor.BLUE;
                         } else {
-                            Storage.currentColor = "red";
+                            Storage.currentColor = Storage.CurrentColor.RED;
                         }
 
                         Storage.currentPose = drive.getPoseEstimate();
@@ -154,11 +151,10 @@ public class FullAuto extends LinearOpMode {
 
     /**
      * Operator interface to set the robot's auto routine
-     * @param drive the main robot class
      * @see #selectorInputs()
      * @see #selectorTelemetry()
      */
-    private void autoSelector (Drive drive) {
+    private void autoSelector() {
         telemetry.addLine("Please choose from the following starting positions:");
         telemetry.addData("A", "Blue Close");
         telemetry.addData("B", "Blue Far");

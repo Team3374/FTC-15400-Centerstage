@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.commands.auto;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 
-import org.firstinspires.ftc.teamcode.auto.FullAuto;
+import org.firstinspires.ftc.teamcode.opmode.auto.FullAuto;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drive;
 
@@ -15,10 +15,6 @@ public class RunFirstPaths extends SequentialCommandGroup {
                 new InstantCommand(auto::findMiddle),
                 new InstantCommand(() -> runPaths(auto, drive, robotPosition))
         );
-
-
-
-
     }
 
     public void runPaths(FullAuto auto, Drive drive, FullAuto.RobotPosition robotPosition) {

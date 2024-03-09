@@ -9,8 +9,8 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.util.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.util.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.util.Storage;
 
 import java.util.List;
@@ -68,7 +68,7 @@ public class Drive extends SubsystemBase {
                 fieldCentric ? -poseEstimate.getHeading() : 0
         );
 
-        if (poseEstimate.getY() < -28 && input.getX() > -0.75 && Storage.currentColor.equals("red")) {
+        if (poseEstimate.getY() < -28 && input.getX() > -0.75 && Storage.currentColor == Storage.CurrentColor.RED) {
             drive.setWeightedDrivePower(
                     new Pose2d(
                             input.getX() * 0.3,
@@ -76,7 +76,7 @@ public class Drive extends SubsystemBase {
                             -rightX * 0.3
                     )
             );
-        } else if (poseEstimate.getY() > 28 && input.getX() > -0.75 && Storage.currentColor.equals("blue")) {
+        } else if (poseEstimate.getY() > 28 && input.getX() > -0.75 && Storage.currentColor == Storage.CurrentColor.BLUE) {
             drive.setWeightedDrivePower(
                     new Pose2d(
                             input.getX() * 0.3,

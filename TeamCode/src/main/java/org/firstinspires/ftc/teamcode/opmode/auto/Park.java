@@ -1,20 +1,18 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.opmode.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 import org.firstinspires.ftc.teamcode.util.Storage;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.util.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name="Park")
 public class Park extends CommandOpMode {
@@ -160,19 +158,19 @@ public class Park extends CommandOpMode {
         switch (selectedAuto) {
             case "bcp":
                 drive.followTrajectorySequence(bcPark);
-                Storage.currentColor = "blue";
+                Storage.currentColor = Storage.CurrentColor.BLUE;
                 break;
             case "bfp":
                 drive.followTrajectorySequence(bfPark);
-                Storage.currentColor = "blue";
+                Storage.currentColor = Storage.CurrentColor.BLUE;
                 break;
             case "rcp":
                 drive.followTrajectorySequence(rcPark);
-                Storage.currentColor = "red";
+                Storage.currentColor = Storage.CurrentColor.RED;
                 break;
             case "rfp":
                 drive.followTrajectorySequence(rfPark);
-                Storage.currentColor = "blue";
+                Storage.currentColor = Storage.CurrentColor.RED;
                 break;
         }
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.opmode.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -85,7 +85,7 @@ public class DoNothing extends LinearOpMode {
 
         waitForStart();
 
-        Storage.currentColor = "none";
+        Storage.currentColor = Storage.CurrentColor.NONE;
 
         Storage.currentPose = drive.getPoseEstimate();
         Pose2d poseEstimate = drive.getPoseEstimate();

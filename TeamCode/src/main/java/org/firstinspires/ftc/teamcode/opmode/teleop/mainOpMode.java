@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode.opmode.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
@@ -59,21 +59,25 @@ public class mainOpMode extends CommandOpMode {
         //* set pose estimate based on starting location
         Pose2d poseEstimate;
 
-        if (Storage.currentColor.equals("blue")) {
-            poseEstimate = new Pose2d(
-                    Storage.currentPose.getX(),
-                    Storage.currentPose.getY(),
-                    Math.toRadians(90));
-        } else if (Storage.currentColor.equals("red")) {
-            poseEstimate = new Pose2d(
-                    Storage.currentPose.getX(),
-                    Storage.currentPose.getY(),
-                    Math.toRadians(-90));
-        } else {
-            poseEstimate = new Pose2d(
-                    Storage.currentPose.getX(),
-                    Storage.currentPose.getY(),
-                    Math.toRadians(0));
+        switch (Storage.currentColor) {
+            case BLUE:
+                poseEstimate = new Pose2d(
+                        Storage.currentPose.getX(),
+                        Storage.currentPose.getY(),
+                        Math.toRadians(90));
+                break;
+            case RED:
+                poseEstimate = new Pose2d(
+                        Storage.currentPose.getX(),
+                        Storage.currentPose.getY(),
+                        Math.toRadians(-90));
+                break;
+            default:
+                poseEstimate = new Pose2d(
+                        Storage.currentPose.getX(),
+                        Storage.currentPose.getY(),
+                        Math.toRadians(0));
+                break;
         }
 
         drive.setPoseEstimate(poseEstimate);
@@ -90,7 +94,7 @@ public class mainOpMode extends CommandOpMode {
         gamepadTwo.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new InstantCommand(() -> {
                     drive.setPoseEstimate(new Pose2d(0, 0, 0));
-                    Storage.currentColor = "none";
+                    Storage.currentColor = Storage.CurrentColor.NONE;
                 })
         );
 
