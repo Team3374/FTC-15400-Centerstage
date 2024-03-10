@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
@@ -14,15 +16,15 @@ public class ManualLiftCommand extends CommandBase {
 
     //* create helper vars
     private final boolean hasLimits;
-    private final DoubleSupplier input;
+    private final GamepadEx gamepad;
 
-    public ManualLiftCommand(Lift lift, Arm arm, DoubleSupplier input, boolean hasLimits) {
+    public ManualLiftCommand(Lift lift, Arm arm, GamepadEx gamepad, boolean hasLimits) {
         //* initialize subsystems/helpers and set req.
         this.lift = lift;
         this.arm = arm;
 
         this.hasLimits = hasLimits;
-        this.input = input;
+        this.gamepad = gamepad;
 
         addRequirements(lift);
     }
@@ -30,12 +32,16 @@ public class ManualLiftCommand extends CommandBase {
     //* set lift power based on analog input
     @Override
     public void execute() {
-        if (input.getAsDouble() > 0 && lift.getPosition() <= 2400) {
-            lift.setPower(input.getAsDouble());
-        } else if (input.getAsDouble() < 0 && (lift.getPosition() >= 1500 || (lift.getPosition() > 0 && arm.isDown()))) {
-            lift.setPower(input.getAsDouble());
-        } else if (!hasLimits && Math.abs(input.getAsDouble()) > 0.05) {
-            lift.setPower(input.getAsDouble());
+        double rightTrigger = gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+        double leftTrigger = gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+        double input = rightTrigger - leftTrigger;
+
+        if (input > 0 && lift.getPosition() <= 2400) {
+            lift.setPower(input);
+        } else if (input < 0 && (lift.getPosition() >= 1500 || (lift.getPosition() > 0 && arm.isDown()))) {
+            lift.setPower(input);
+        } else if (!hasLimits && Math.abs(input) > 0.05) {
+            lift.setPower(input);
         } else {
             lift.setPower(0);
         }

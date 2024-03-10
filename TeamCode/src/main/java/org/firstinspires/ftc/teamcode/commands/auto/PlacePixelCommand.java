@@ -15,8 +15,8 @@ public class PlacePixelCommand extends SequentialCommandGroup {
         addCommands(
                 new AutoLiftCommand(lift, arm, height),
                 new ArmCommand(arm, angle),
-                new TimedHolderCommand(holder, 1, TimedHolderCommand.Direction.OUT),
-                new ArmCommand(arm, 0),
+                new TimedHolderCommand(holder, 1, TimedHolderCommand.HolderDirection.OUT),
+                new ArmCommand(arm, 0.075),
                 new AutoLiftCommand(lift, arm, 0)
         );
 

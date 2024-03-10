@@ -22,21 +22,22 @@ public class ArmCommand extends CommandBase {
 
     //* set arm position based on target
     @Override
-    public void execute() {
-        if (arm.getTargetPosition() == 0) {
+    public void initialize() {
+        if (arm.getTargetPosition() <= 0.1) {
             arm.setPosition(targetPosition);
         } else {
-            arm.setPosition(0);
+            arm.down();
         }
     }
 
     //* for up, check analog. for down, check sensor
     @Override
     public boolean isFinished() {
-        if (targetPosition == 0) {
+        if (targetPosition <= 0.1) {
             return arm.isDown();
         } else {
-            return arm.getPosition() >= targetPosition;
+            //return arm.getPosition() >= targetPosition; TODO: PUT BACK IN WHEN WIRED
+            return true;
         }
     }
 }

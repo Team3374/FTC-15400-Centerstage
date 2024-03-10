@@ -6,18 +6,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.subsystems.Holder;
 
 public class TimedHolderCommand extends CommandBase {
+    //* create subsystems
     private Holder holder;
 
+    //* create helper vars
     private double targetTime;
     private ElapsedTime timer;
 
-    public enum Direction {
+    public enum HolderDirection {
         IN,
         OUT
     }
-    public Direction direction;
+    private final HolderDirection direction;
 
-    public TimedHolderCommand(Holder holder, double targetTime, Direction direction) {
+    public TimedHolderCommand(Holder holder, double targetTime, HolderDirection direction) {
+        //* initialize subsystems/helpers and set req.
         this.holder = holder;
         this.targetTime = targetTime;
 
@@ -34,7 +37,7 @@ public class TimedHolderCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (direction == Direction.IN) {
+        if (direction == HolderDirection.IN) {
             holder.in();
         } else {
             holder.out();

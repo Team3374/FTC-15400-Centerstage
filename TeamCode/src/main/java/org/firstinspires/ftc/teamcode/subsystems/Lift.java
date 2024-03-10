@@ -15,7 +15,7 @@ public class Lift extends SubsystemBase {
         rightLiftMotor = new Motor(hardwareMap, "rightLiftMotor");
 
         leftLiftMotor.setInverted(true);
-        rightLiftMotor.setInverted(false);
+        rightLiftMotor.setInverted(true);
 
         leftLiftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         rightLiftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
@@ -24,7 +24,7 @@ public class Lift extends SubsystemBase {
         rightLiftMotor.stopAndResetEncoder();
     }
 
-    //* set lift to speified position
+    //* set lift to specified position
     public void setPosition(int targetPosition) {
         leftLiftMotor.setTargetPosition(targetPosition);
         rightLiftMotor.setTargetPosition(targetPosition);

@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.commands.AutoLiftCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.ManualLiftCommand;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Holder;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -29,6 +30,7 @@ public class mainOpMode extends CommandOpMode {
     //* create all subsystems
     private Drive drive;
     private Intake intake;
+    private Claw claw;
     private Holder holder;
     private Arm arm;
     private Lift lift;
@@ -42,9 +44,10 @@ public class mainOpMode extends CommandOpMode {
     @Override
     public void initialize() {
         //* initialize subsystems
-        drive = new Drive(new DriveBase(hardwareMap), true);
+        drive = new Drive(new DriveBase(hardwareMap), false);
 
         intake = new Intake(hardwareMap);
+        claw = new Claw(hardwareMap);
         holder = new Holder(hardwareMap);
         arm = new Arm(hardwareMap);
         lift = new Lift(hardwareMap);
@@ -87,7 +90,7 @@ public class mainOpMode extends CommandOpMode {
                 new RunCommand(() -> {
                     drive.driveWithLimits(gamepadOne.getLeftY(), gamepadOne.getLeftX(), gamepadOne.getRightX());
                     drive.update();
-                })
+                }, drive)
         );
 
         //* pose reset button, removes speed limiter
@@ -95,7 +98,7 @@ public class mainOpMode extends CommandOpMode {
                 new InstantCommand(() -> {
                     drive.setPoseEstimate(new Pose2d(0, 0, 0));
                     Storage.currentColor = Storage.CurrentColor.NONE;
-                })
+                }, drive)
         );
 
         //* intake commands
@@ -105,6 +108,14 @@ public class mainOpMode extends CommandOpMode {
 
         gamepadOne.getGamepadButton(GamepadKeys.Button.B).whileHeld(
                 new IntakeCommand(intake, holder, false)
+        );
+
+        gamepadTwo.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+                new InstantCommand(claw::open, claw)
+        );
+
+        gamepadTwo.getGamepadButton(GamepadKeys.Button.B).whenPressed(
+                new InstantCommand(claw::close, claw)
         );
 
         //* arm commands
@@ -117,22 +128,24 @@ public class mainOpMode extends CommandOpMode {
         );
 
         //* lift commands
-        schedule(
-                new RunCommand(() -> {
-                    double rightTriggerOne = gamepadOne.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-                    double leftTriggerOne = gamepadOne.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-                    double rightTriggerTwo = gamepadTwo.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-                    double leftTriggerTwo = gamepadTwo.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+//        lift.setDefaultCommand(
+//                new RunCommand(() -> {
+//                    double rightTriggerOne = gamepadOne.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+//                    double leftTriggerOne = gamepadOne.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+//                    double rightTriggerTwo = gamepadTwo.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+//                    double leftTriggerTwo = gamepadTwo.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+//
+//                    if (rightTriggerOne > 0.05 || leftTriggerOne > 0.05) {
+//                        DoubleSupplier input = () -> (rightTriggerOne - leftTriggerOne);
+//                        new ManualLiftCommand(lift, arm, input, true);
+//                    } else if (rightTriggerTwo > 0.05 || leftTriggerTwo > 0.05) {
+//                        DoubleSupplier input = () -> rightTriggerTwo - leftTriggerTwo;
+//                        new ManualLiftCommand(lift, arm, input, false);
+//                    }
+//                }, lift)
+//        );
 
-                    if (rightTriggerOne > 0.05 || leftTriggerOne > 0.05) {
-                        DoubleSupplier input = () -> rightTriggerOne - leftTriggerOne;
-                        new ManualLiftCommand(lift, arm, input, true);
-                    } else if (rightTriggerTwo > 0.05 || leftTriggerTwo > 0.05) {
-                        DoubleSupplier input = () -> rightTriggerTwo - leftTriggerTwo;
-                        new ManualLiftCommand(lift, arm, input, false);
-                    }
-                })
-        );
+        lift.setDefaultCommand(new ManualLiftCommand(lift, arm, gamepadOne, true));
 
         gamepadOne.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new AutoLiftCommand(lift, arm, 1750)
@@ -144,21 +157,22 @@ public class mainOpMode extends CommandOpMode {
 
         //* airplane shooter commands
         gamepadOne.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new InstantCommand(shooter::up)
+                new InstantCommand(shooter::up, shooter)
         );
 
         gamepadOne.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new InstantCommand(shooter::down)
+                new InstantCommand(shooter::down, shooter)
         );
 
         //* telemetry
         schedule(
-                new InstantCommand(() -> {
+                new RunCommand(() -> {
                     telemetry.addData("x", drive.getPoseEstimate().getX());
                     telemetry.addData("y", drive.getPoseEstimate().getY());
                     telemetry.addData("heading", drive.getPoseEstimate().getHeading());
                     telemetry.addLine();
                     telemetry.addData("Lift Position", lift.getPosition());
+                    telemetry.addData("Arm Target Positon", arm.getTargetPosition());
                     telemetry.addLine();
                     telemetry.addData("Holder Sensor", arm.isDown());
                     telemetry.update();

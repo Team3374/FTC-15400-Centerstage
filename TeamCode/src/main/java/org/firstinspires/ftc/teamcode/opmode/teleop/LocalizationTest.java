@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 
@@ -22,6 +23,9 @@ public class LocalizationTest extends LinearOpMode {
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        Servo leftServo = hardwareMap.get(Servo.class, "leftArmServo");
+        Servo rightServo = hardwareMap.get(Servo.class, "rightArmServo");
+
         waitForStart();
 
         while (!isStopRequested()) {
@@ -34,6 +38,9 @@ public class LocalizationTest extends LinearOpMode {
             );
 
             drive.update();
+
+            leftServo.setPosition(gamepad1.right_trigger + 0.075);
+            rightServo.setPosition(gamepad1.right_trigger + 0.075);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());

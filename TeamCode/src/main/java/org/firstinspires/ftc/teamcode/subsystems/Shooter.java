@@ -16,10 +16,6 @@ public class Shooter extends SubsystemBase {
     }
 
     //* set shooter servo to specified position
-    public void setPosition(double targetPosition) {
-        shooterServo.setPosition(targetPosition);
-    }
-
     public void up() {shooterServo.setPosition(1);}
     public void down() {shooterServo.setPosition(0);}
 }

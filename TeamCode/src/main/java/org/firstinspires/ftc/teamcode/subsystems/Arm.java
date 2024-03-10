@@ -11,7 +11,7 @@ public class Arm extends SubsystemBase {
     private final Servo leftArmServo;
     private final Servo rightArmServo;
 
-    private final AnalogInput servoInput;
+//    private final AnalogInput servoInput;
     private final RevTouchSensor armSensor;
 
     public Arm(HardwareMap hardwareMap) {
@@ -19,14 +19,14 @@ public class Arm extends SubsystemBase {
         leftArmServo = hardwareMap.get(Servo.class, "leftArmServo");
         rightArmServo = hardwareMap.get(Servo.class, "rightArmServo");
 
-        servoInput = hardwareMap.get(AnalogInput.class, "servoInput");
+//        servoInput = hardwareMap.get(AnalogInput.class, "servoInput");
         armSensor = hardwareMap.get(RevTouchSensor.class, "holder");
 
         leftArmServo.setDirection(Servo.Direction.REVERSE);
         rightArmServo.setDirection(Servo.Direction.FORWARD);
 
-        leftArmServo.setPosition(0.0);
-        rightArmServo.setPosition(0.0);
+        leftArmServo.setPosition(0.1);
+        rightArmServo.setPosition(0.1);
     }
 
     //* set arm to specified position
@@ -35,15 +35,20 @@ public class Arm extends SubsystemBase {
         rightArmServo.setPosition(position);
     }
 
+    public void down() {
+        leftArmServo.setPosition(0.1);
+        rightArmServo.setPosition(0.1);
+    }
+
     //* returns target position of servos
     public double getTargetPosition() {
         return leftArmServo.getPosition();
     }
 
     //* return analog position of servo (0 to 1)
-    public double getPosition() {
-        return servoInput.getVoltage() / 3.3;
-    }
+//    public double getPosition() {
+//        return servoInput.getVoltage() / 3.3;
+//    }
 
     //* returns true if touch sensor pressed
     public boolean isDown() {

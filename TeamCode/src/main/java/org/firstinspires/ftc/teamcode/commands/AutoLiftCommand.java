@@ -30,7 +30,7 @@ public class AutoLiftCommand extends CommandBase {
             lift.setPosition(targetPosition);
         } else if (targetPosition == 0 && (lift.getPosition() > 1400 || arm.isDown())) {
             lift.setPosition(0);
-            arm.setPosition(0);
+            arm.down();
         }
     }
 

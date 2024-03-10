@@ -41,6 +41,7 @@ public class RunFinalPaths extends SequentialCommandGroup {
                     break;
                 case RIGHT:
                     addCommands(new FollowTrajectorySequence(drive, auto.redStrafeRight));
+                    break;
                 default:
                     break;
             }

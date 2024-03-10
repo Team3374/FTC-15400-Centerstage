@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.commands.auto.PlacePixelCommand;
 import org.firstinspires.ftc.teamcode.commands.auto.RunFinalPaths;
 import org.firstinspires.ftc.teamcode.commands.auto.RunFirstPaths;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.DistanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.Holder;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.util.trajectorysequence.TrajectorySequence
 
 @Autonomous(name="Full Auto")
 public class FullAuto extends LinearOpMode {
+    //* create enums for robot/prop position and specified strafe direction
     public enum RobotPosition {
         BLUE_CLOSE,
         BLUE_FAR,
@@ -46,24 +48,29 @@ public class FullAuto extends LinearOpMode {
         LEFT,
         RIGHT
     }
+    //no strafe by default
     public StrafeSelection strafeSelection = StrafeSelection.NONE;
 
+    //create extra auto paths index (no. times to run extra paths)
     private int autoIndex = 0;
 
     //create delay timer
     private final ElapsedTime timer = new ElapsedTime();
     private int delay = 0;
 
-    //create "robot"
+    //* create subsystems
     private DriveBase driveBase;
     private Drive drive;
     private Intake intake;
+    private Claw claw;
     private Holder holder;
     private Lift lift;
     private Arm arm;
 
+    //create distance sensor
     public DistanceSensor distanceSensor;
 
+    //create gamepad
     private GamepadEx gamepadOne;
 
     //create all trajectory sequences
@@ -75,11 +82,14 @@ public class FullAuto extends LinearOpMode {
             bluePixel, redPixel,
             blueStrafeLeft, blueStrafeRight, redStrafeLeft, redStrafeRight;
 
+    //runs once
     @Override
     public void runOpMode() throws InterruptedException {
+        //initialize subsystems/sensor/gamepad
         driveBase = new DriveBase(hardwareMap);
         drive = new Drive(driveBase, false);
         intake = new Intake(hardwareMap);
+        claw = new Claw(hardwareMap);
         holder = new Holder(hardwareMap);
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
@@ -87,6 +97,9 @@ public class FullAuto extends LinearOpMode {
         distanceSensor = new DistanceSensor(hardwareMap);
 
         gamepadOne = new GamepadEx(gamepad1);
+
+        //* lock in pixel when initialized
+        claw.holdPixel();
 
         //build initial auto paths
         buildFirstPaths();
@@ -96,17 +109,14 @@ public class FullAuto extends LinearOpMode {
             autoSelector();
         }
 
-        //set robot distance from wall when intaking extra pixels
-        final double inchesFromWall = 1.5;
-        boolean middle = false;
-
+        //* schedules commands for auto
         CommandScheduler.getInstance().schedule(
             new SequentialCommandGroup(
                     new InstantCommand(this::buildFirstPaths),
                     new RunFirstPaths(this, drive, robotPosition),
                     new PlacePixelCommand(lift, arm, holder, 1450, 0.5),
                     new InstantCommand(() -> Storage.currentPose = drive.getPoseEstimate()),
-                    new InstantCommand(() -> buildFinalPaths(inchesFromWall)),
+                    new InstantCommand(() -> buildFinalPaths(1.5)),
                     new RunFinalPaths(this, drive, lift, arm, holder, autoIndex),
                     new InstantCommand(() -> {
                         if (robotPosition == RobotPosition.BLUE_CLOSE || robotPosition == RobotPosition.BLUE_FAR) {
@@ -133,6 +143,7 @@ public class FullAuto extends LinearOpMode {
             throw new RuntimeException(e);
         }
 
+        //* run scheduled commands
         CommandScheduler.getInstance().run();
 
         while (opModeIsActive() && !isStopRequested()) {
@@ -270,155 +281,110 @@ public class FullAuto extends LinearOpMode {
     /**
      * Builds initial auto paths
      */
-    public void buildFirstPaths() {
+    private void buildFirstPaths() {
         //* middle paths
-        bcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, 63.50, Math.toRadians(-90.00)))
-                .splineTo(new Vector2d(26.00, 48.00), Math.toRadians(0.00))
-                .lineTo(new Vector2d(26.00, 24.00))
-                .addTemporalMarker(() -> intake.setPower(-0.25))
-                .waitSeconds(0.5)
-                .addTemporalMarker(intake::stop)
-                .lineTo(new Vector2d(50.00, 36.00))
+        bcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, 64.50, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(15.00, 33.00))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(51.00, 36.00), Math.toRadians(0.00))
                 .build();
 
-
-        bfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 63.50, Math.toRadians(-90.00)))
-                .splineTo(new Vector2d(-51.00, 48.00), Math.toRadians(180.00))
-                .lineTo(new Vector2d(-51.00, 24.00))
-                .addTemporalMarker(() -> intake.setPower(-0.25))
-                .waitSeconds(0.5)
-                .addTemporalMarker(intake::stop)
-                .lineTo(new Vector2d(-53.00, 24.00))
-                .lineTo(new Vector2d(-53.00, 36.00))
-                .lineTo(new Vector2d(0.00, 36.00))
-                .lineToSplineHeading(new Pose2d(36.00, 36.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(50.00, 36.00))
+        bfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 64.50, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(-39.00, 33.00))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(-24.00, 36.00), Math.toRadians(0.00))
+                .lineTo(new Vector2d(51.00, 36.00))
                 .build();
 
-        rcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90.00)))
-                .splineTo(new Vector2d(26.00, -48.00), Math.toRadians(0.00))
-                .lineTo(new Vector2d(26.00, -24.00))
-                .addTemporalMarker(() -> intake.setPower(-0.25))
-                .waitSeconds(0.5)
-                .addTemporalMarker(intake::stop)
-                .lineTo(new Vector2d(50.00, -36.00))
+        rcMiddle = drive.trajectorySequenceBuilder(new Pose2d(12.00, -64.50, Math.toRadians(-90.00)))
+                .lineTo(new Vector2d(15.00, -33.00))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(51.00, -36.00), Math.toRadians(0.00))
                 .build();
 
-        rfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -63.50, Math.toRadians(90.00)))
-                .splineTo(new Vector2d(-49.00, -48.00), Math.toRadians(180.00))
-                .lineTo(new Vector2d(-50.00, -24.00))
-                .addTemporalMarker(() -> intake.setPower(-0.25))
-                .waitSeconds(0.5)
-                .addTemporalMarker(intake::stop)
-                .lineTo(new Vector2d(-52.00, -24.00))
-                .lineTo(new Vector2d(-52.00, -36.00))
-                .lineTo(new Vector2d(0.00, -36.00))
-                .lineToSplineHeading(new Pose2d(36.00, -36.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(50.00, -36.00))
+        rfMiddle = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -64.50, Math.toRadians(270.00)))
+                .lineTo(new Vector2d(-39.00, -33.00))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(-24.00, -36.00), Math.toRadians(360.00))
+                .lineTo(new Vector2d(51.00, -36.00))
                 .build();
-
 
 
         //* far paths
-        bcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(23.00, 44.00, Math.toRadians(90.00)))
-                .addTemporalMarker(() -> intake.setPower(-0.25))
-                .lineTo(new Vector2d(23.00, 46.00))
-                .addTemporalMarker(intake::stop)
-                .lineToSplineHeading(new Pose2d(40.00, 42.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(50.00, 42.00))
+        bcFar = drive.trajectorySequenceBuilder(new Pose2d(23.00, 64.50, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(23.00, 44.00))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(51.00, 42.00), Math.toRadians(360.00))
                 .build();
 
-        bfFar = drive.trajectorySequenceBuilder(new Pose2d(-48.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(-46.00, 44.00, Math.toRadians(90.00)))
-                .addTemporalMarker(() -> intake.setPower(-0.25))
-                .lineTo(new Vector2d(-46.00, 46.00))
-                .addTemporalMarker(intake::stop)
-                .lineTo(new Vector2d(-34.00, 46.00))
-                .lineTo(new Vector2d(-36.00, 24.00))
-                .lineToSplineHeading(new Pose2d(-36.00, 12.00, Math.toRadians(0)))
+        bfFar = drive.trajectorySequenceBuilder(new Pose2d(-47.00, 64.50, Math.toRadians(90.00)))
+                .lineToSplineHeading(new Pose2d(-39.00, 33.00, Math.toRadians(0.00)))
+                .addTemporalMarker(claw::open)
+                .lineTo(new Vector2d(-32.00, 12.00))
                 .lineTo(new Vector2d(12.00, 12.00))
-                .lineToSplineHeading(new Pose2d(50, 34, Math.toRadians(0.00)))
+                .splineTo(new Vector2d(51.00, 30.00), Math.toRadians(0.00))
                 .build();
 
-        rcFar = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(90.00)))
-                .lineToSplineHeading(new Pose2d(23.00, -44.00, Math.toRadians(-90.00)))
-                .addTemporalMarker(() -> intake.setPower(-0.25))
-                .lineTo(new Vector2d(23.00, -46.00))
-                .addTemporalMarker(intake::stop)
-                .lineToSplineHeading(new Pose2d(40.00, -42.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(50.00, -42.00))
+        rcFar = drive.trajectorySequenceBuilder(new Pose2d(23.00, -64.50, Math.toRadians(270.00)))
+                .lineTo(new Vector2d(23.00, -44.00))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(51.00, -42.00), Math.toRadians(360.00))
                 .build();
 
-        rfFar = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(90.00)))
-                .lineToSplineHeading(new Pose2d(-46.00, -44.00, Math.toRadians(-90.00)))
-                .addTemporalMarker(() -> intake.setPower(-0.25))
-                .lineTo(new Vector2d(-46.00, -46.00))
-                .addTemporalMarker(intake::stop)
-                .lineTo(new Vector2d(-34.00, -46.00))
-                .lineTo(new Vector2d(-36.00, -24.00))
-                .lineToSplineHeading(new Pose2d(-36.00, -12.00, Math.toRadians(0.00)))
+        rfFar = drive.trajectorySequenceBuilder(new Pose2d(-47.00, -64.50, Math.toRadians(270.00)))
+                .lineToSplineHeading(new Pose2d(-39.00, -33.00, Math.toRadians(360.00)))
+                .addTemporalMarker(claw::open)
+                .lineTo(new Vector2d(-32.00, -12.00))
                 .lineTo(new Vector2d(12.00, -12.00))
-                .lineToSplineHeading(new Pose2d(50, -34, Math.toRadians(0.00)))
+                .splineTo(new Vector2d(51.00, -30.00), Math.toRadians(0.00))
                 .build();
 
 
         //* close paths
-        bcClose = drive.trajectorySequenceBuilder(new Pose2d(24.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(24.00, 30.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(11.00, 30.00))
-                .addTemporalMarker(intake::out)
-                .lineTo(new Vector2d(24.00, 30.00))
-                .addTemporalMarker(intake::stop)
-                .lineTo(new Vector2d(50.00, 32.00))
+        bcClose = drive.trajectorySequenceBuilder(new Pose2d(23.00, 64.50, Math.toRadians(90.00)))
+                .lineToSplineHeading(new Pose2d(9.00, 35.00, Math.toRadians(0.00)))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(51.00, 30.00), Math.toRadians(0.00))
                 .build();
 
-        bfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, 63.50, Math.toRadians(-90.00)))
-                .lineToSplineHeading(new Pose2d(-48.00, 30.00, Math.toRadians(180.00)))
-                .lineTo(new Vector2d(-36.00, 30.00))
-                .addTemporalMarker(intake::out)
-                .lineTo(new Vector2d(-48.00, 30.00))
-                .addTemporalMarker(intake::stop)
-                .lineToSplineHeading(new Pose2d(-48.00, 12.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(12.00, 12.00))
-                .lineTo(new Vector2d(50.00, 42.00))
+        bfClose = drive.trajectorySequenceBuilder(new Pose2d(-47.00, 64.50, Math.toRadians(90.00)))
+                .lineToSplineHeading(new Pose2d(-33.00, 35.00, Math.toRadians(180.00)))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(-24.00, 12.00), Math.toRadians(0.00))
+                .lineTo(new Vector2d(24.00, 12.00))
+                .splineTo(new Vector2d(51.00, 42.00), Math.toRadians(0.00))
                 .build();
 
-        rcClose = drive.trajectorySequenceBuilder(new Pose2d(24.00, -63.50, Math.toRadians(90.00)))
-                .lineToSplineHeading(new Pose2d(24.00, -30.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(11.00, -30.00))
-                .addTemporalMarker(intake::out)
-                .lineTo(new Vector2d(24.00, -30.00))
-                .addTemporalMarker(intake::stop)
-                .lineTo(new Vector2d(50.00, -32.00))
+        rcClose = drive.trajectorySequenceBuilder(new Pose2d(23.00, -64.50, Math.toRadians(270.00)))
+                .lineToSplineHeading(new Pose2d(9.00, -35.00, Math.toRadians(360.00)))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(51.00, -30.00), Math.toRadians(0.00))
                 .build();
 
-        rfClose = drive.trajectorySequenceBuilder(new Pose2d(-48.00, -63.50, Math.toRadians(90.00)))
-                .lineToSplineHeading(new Pose2d(-48.00, -30.00, Math.toRadians(180.00)))
-                .lineTo(new Vector2d(-36.00, -30.00))
-                .addTemporalMarker(intake::out)
-                .lineTo(new Vector2d(-48.00, -30.00))
-                .addTemporalMarker(intake::stop)
-                .lineToSplineHeading(new Pose2d(-48.00, -12.00, Math.toRadians(0.00)))
-                .lineTo(new Vector2d(12.00, -12.00))
-                .lineTo(new Vector2d(50.00, -42.00))
+        rfClose = drive.trajectorySequenceBuilder(new Pose2d(-47.00, -64.50, Math.toRadians(270.00)))
+                .lineToSplineHeading(new Pose2d(-33.00, -35.00, Math.toRadians(180.00)))
+                .addTemporalMarker(claw::open)
+                .splineTo(new Vector2d(-24.00, -12.00), Math.toRadians(360.00))
+                .lineTo(new Vector2d(24.00, -12.00))
+                .splineTo(new Vector2d(51.00, -42.00), Math.toRadians(0.00))
                 .build();
+
 
         //* strafe paths (scanning)
-        bcStrafe = drive.trajectorySequenceBuilder(new Pose2d(12.00, 63.50, Math.toRadians(-90.00)))
-                .lineTo(new Vector2d(24.00, 63.50))
+        bcStrafe = drive.trajectorySequenceBuilder(new Pose2d(12.00, 64.50, Math.toRadians(-90.00)))
+                .lineTo(new Vector2d(23.00, 64.50))
                 .build();
 
-        bfStrafe = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 63.50, Math.toRadians(-90.00)))
-                .lineTo(new Vector2d(-48.00, 63.50))
+        bfStrafe = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 64.50, Math.toRadians(-90.00)))
+                .lineTo(new Vector2d(-47.00, 64.50))
                 .build();
 
-        rcStrafe = drive.trajectorySequenceBuilder(new Pose2d(12.00, -63.50, Math.toRadians(90.00)))
-                .lineTo(new Vector2d(24.00, -63.50))
+        rcStrafe = drive.trajectorySequenceBuilder(new Pose2d(12.00, -64.50, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(23.00, -64.50))
                 .build();
 
-        rfStrafe = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -63.50, Math.toRadians(90.00)))
-                .lineTo(new Vector2d(-48.00, -63.50))
+        rfStrafe = drive.trajectorySequenceBuilder(new Pose2d(-36.00, -64.50, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(-47.00, -64.50))
                 .build();
     }
 
@@ -426,42 +392,46 @@ public class FullAuto extends LinearOpMode {
      * Builds final auto paths
      * @param inchesFromWall the distance between the robot and the wall when intaking pixels
      */
-    public void buildFinalPaths(double inchesFromWall) {
+    private void buildFinalPaths(double inchesFromWall) {
         //* extra pixel paths
-        bluePixel = drive.trajectorySequenceBuilder(new Pose2d(50.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
+        bluePixel = drive.trajectorySequenceBuilder(new Pose2d(51.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
                 .setReversed(true)
-                .splineTo(new Vector2d(12.00,-10.00), Math.toRadians(180))
-                .lineTo(new Vector2d((-63.5 + inchesFromWall), 12.00))
+                .splineTo(new Vector2d(24.00, 12.00), Math.toRadians(0.00))
+                .lineTo(new Vector2d(-64.50 + inchesFromWall, 12.00))
                 .addTemporalMarker(intake::in)
                 .addTemporalMarker(holder::in)
-                .waitSeconds(1)
-                .lineTo(new Vector2d((-63.5 + inchesFromWall + 10), 12.00))
-                .lineTo(new Vector2d((-63.5 + inchesFromWall), 12.00))
-                .waitSeconds(1)
+                .addTemporalMarker(claw::close)
+                .waitSeconds(0.25)
+                .addTemporalMarker(claw::open)
+                .waitSeconds(0.25)
+                .addTemporalMarker(claw::close)
+                .addTemporalMarker(claw::open)
                 .addTemporalMarker(holder::stop)
                 .addTemporalMarker(intake::out)
                 .setReversed(false)
-                .lineTo(new Vector2d(12.00, 12.00))
+                .lineTo(new Vector2d(24.00, 12.00))
                 .addTemporalMarker(intake::stop)
-                .splineTo(new Vector2d(49.00, Storage.currentPose.getY()), Math.toRadians(0.00))
+                .splineTo(new Vector2d(51.00, Storage.currentPose.getY()), Math.toRadians(0.00))
                 .build();
 
-        redPixel = drive.trajectorySequenceBuilder(new Pose2d(50.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
+        bluePixel = drive.trajectorySequenceBuilder(new Pose2d(51.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
                 .setReversed(true)
-                .splineTo(new Vector2d(12.00,-10.00), Math.toRadians(180))
-                .lineTo(new Vector2d((-63.5 + inchesFromWall), -12.00))
+                .splineTo(new Vector2d(24.00, -12.00), Math.toRadians(0.00))
+                .lineTo(new Vector2d(-64.50 + inchesFromWall, -12.00))
                 .addTemporalMarker(intake::in)
                 .addTemporalMarker(holder::in)
-                .waitSeconds(1)
-                .lineTo(new Vector2d((-63.5 + inchesFromWall + 10), -12.00))
-                .lineTo(new Vector2d((-63.5 + inchesFromWall), -12.00))
-                .waitSeconds(1)
+                .addTemporalMarker(claw::close)
+                .waitSeconds(0.25)
+                .addTemporalMarker(claw::open)
+                .waitSeconds(0.25)
+                .addTemporalMarker(claw::close)
+                .addTemporalMarker(claw::open)
                 .addTemporalMarker(holder::stop)
                 .addTemporalMarker(intake::out)
                 .setReversed(false)
-                .lineTo(new Vector2d(12.00, -12.00))
+                .lineTo(new Vector2d(24.00, -12.00))
                 .addTemporalMarker(intake::stop)
-                .splineTo(new Vector2d(49.00, Storage.currentPose.getY()), Math.toRadians(0.00))
+                .splineTo(new Vector2d(51.00, Storage.currentPose.getY()), Math.toRadians(0.00))
                 .build();
 
         //* strafe paths (end)
@@ -488,12 +458,18 @@ public class FullAuto extends LinearOpMode {
                 .build();
     }
 
+    /**
+     * Uses distance sensor to tell if prop is in middle config.
+     */
     public void findMiddle() {
         if (distanceSensor.getDistance() > 14 && distanceSensor.getDistance() < 23) {
             propPosition = PropPosition.MIDDLE;
         }
     }
 
+    /**
+     * Uses distance sensor to tell if prop is in far or close config.
+     */
     public void findFar() {
         if (distanceSensor.getDistance() > 14 && distanceSensor.getDistance() < 23) {
             propPosition = PropPosition.FAR;
