@@ -22,9 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 import org.firstinspires.ftc.teamcode.util.Storage;
 
-import java.util.function.DoubleSupplier;
-
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "FieldCanBeLocal"})
 @TeleOp
 public class mainOpMode extends CommandOpMode {
     //* create all subsystems
@@ -101,7 +99,7 @@ public class mainOpMode extends CommandOpMode {
                 }, drive)
         );
 
-        //* intake commands
+        //* intake/claw commands
         gamepadOne.getGamepadButton(GamepadKeys.Button.A).whileHeld(
                 new IntakeCommand(intake, holder, true)
         );
@@ -128,27 +126,14 @@ public class mainOpMode extends CommandOpMode {
         );
 
         //* lift commands
-//        lift.setDefaultCommand(
-//                new RunCommand(() -> {
-//                    double rightTriggerOne = gamepadOne.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-//                    double leftTriggerOne = gamepadOne.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-//                    double rightTriggerTwo = gamepadTwo.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-//                    double leftTriggerTwo = gamepadTwo.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-//
-//                    if (rightTriggerOne > 0.05 || leftTriggerOne > 0.05) {
-//                        DoubleSupplier input = () -> (rightTriggerOne - leftTriggerOne);
-//                        new ManualLiftCommand(lift, arm, input, true);
-//                    } else if (rightTriggerTwo > 0.05 || leftTriggerTwo > 0.05) {
-//                        DoubleSupplier input = () -> rightTriggerTwo - leftTriggerTwo;
-//                        new ManualLiftCommand(lift, arm, input, false);
-//                    }
-//                }, lift)
-//        );
-
-        lift.setDefaultCommand(new ManualLiftCommand(lift, arm, gamepadOne, true));
+        lift.setDefaultCommand(new ManualLiftCommand(lift, arm,
+                () -> gamepadOne.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)
+                        - gamepadOne.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
+                () -> gamepadTwo.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)
+                        - gamepadTwo.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)));
 
         gamepadOne.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new AutoLiftCommand(lift, arm, 1750)
+                new AutoLiftCommand(lift, arm, 1250)
         );
 
         gamepadOne.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
@@ -172,7 +157,7 @@ public class mainOpMode extends CommandOpMode {
                     telemetry.addData("heading", drive.getPoseEstimate().getHeading());
                     telemetry.addLine();
                     telemetry.addData("Lift Position", lift.getPosition());
-                    telemetry.addData("Arm Target Positon", arm.getTargetPosition());
+                    telemetry.addData("Arm Target Position", arm.getTargetPosition());
                     telemetry.addLine();
                     telemetry.addData("Holder Sensor", arm.isDown());
                     telemetry.update();

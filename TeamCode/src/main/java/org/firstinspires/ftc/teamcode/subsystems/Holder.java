@@ -11,6 +11,8 @@ public class Holder extends SubsystemBase {
     public Holder(HardwareMap hardwareMap) {
         //* initialize holder servo
         holderServo = new CRServo(hardwareMap, "holderServo");
+
+        holderServo.setInverted(true);
     }
 
     //* set holder servo power (volts)

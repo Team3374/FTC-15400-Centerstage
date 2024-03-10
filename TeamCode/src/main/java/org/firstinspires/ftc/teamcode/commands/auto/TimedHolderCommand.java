@@ -7,11 +7,11 @@ import org.firstinspires.ftc.teamcode.subsystems.Holder;
 
 public class TimedHolderCommand extends CommandBase {
     //* create subsystems
-    private Holder holder;
+    private final Holder holder;
 
     //* create helper vars
-    private double targetTime;
-    private ElapsedTime timer;
+    private final double targetTime;
+    private final ElapsedTime timer;
 
     public enum HolderDirection {
         IN,

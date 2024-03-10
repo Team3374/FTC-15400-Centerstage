@@ -31,4 +31,4 @@ public class FollowTrajectorySequence extends CommandBase {
     public boolean isFinished() {
         return !drive.isBusy();
     }
-};
+}

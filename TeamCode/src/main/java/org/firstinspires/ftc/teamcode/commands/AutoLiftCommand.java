@@ -28,7 +28,7 @@ public class AutoLiftCommand extends CommandBase {
     public void execute() {
         if (targetPosition > 0) {
             lift.setPosition(targetPosition);
-        } else if (targetPosition == 0 && (lift.getPosition() > 1400 || arm.isDown())) {
+        } else if (targetPosition == 0 && (lift.getPosition() > 1000 || arm.isDown())) {
             lift.setPosition(0);
             arm.down();
         }
@@ -37,6 +37,11 @@ public class AutoLiftCommand extends CommandBase {
     //* run once
     @Override
     public boolean isFinished() {
+        if (lift.getBatteryVoltage() < 10.5) {
+            lift.resetPosition();
+            return true;
+        }
+
         if (targetPosition > 0) {
             return lift.getPosition() >= targetPosition;
         } else {

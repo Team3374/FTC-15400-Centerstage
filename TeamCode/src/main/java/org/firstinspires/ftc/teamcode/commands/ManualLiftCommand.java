@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
@@ -15,16 +13,16 @@ public class ManualLiftCommand extends CommandBase {
     private final Arm arm;
 
     //* create helper vars
-    private final boolean hasLimits;
-    private final GamepadEx gamepad;
+    private final DoubleSupplier inputOneSupplier;
+    private final DoubleSupplier inputTwoSupplier;
 
-    public ManualLiftCommand(Lift lift, Arm arm, GamepadEx gamepad, boolean hasLimits) {
+    public ManualLiftCommand(Lift lift, Arm arm, DoubleSupplier inputOneSupplier, DoubleSupplier inputTwoSupplier) {
         //* initialize subsystems/helpers and set req.
         this.lift = lift;
         this.arm = arm;
 
-        this.hasLimits = hasLimits;
-        this.gamepad = gamepad;
+        this.inputOneSupplier = inputOneSupplier;
+        this.inputTwoSupplier = inputTwoSupplier;
 
         addRequirements(lift);
     }
@@ -32,18 +30,24 @@ public class ManualLiftCommand extends CommandBase {
     //* set lift power based on analog input
     @Override
     public void execute() {
-        double rightTrigger = gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-        double leftTrigger = gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-        double input = rightTrigger - leftTrigger;
+        double inputOne = inputOneSupplier.getAsDouble();
+        double inputTwo = inputTwoSupplier.getAsDouble();
 
-        if (input > 0 && lift.getPosition() <= 2400) {
-            lift.setPower(input);
-        } else if (input < 0 && (lift.getPosition() >= 1500 || (lift.getPosition() > 0 && arm.isDown()))) {
-            lift.setPower(input);
-        } else if (!hasLimits && Math.abs(input) > 0.05) {
-            lift.setPower(input);
+        if (Math.abs(inputTwo) > 0) {
+            lift.setPower(inputTwo);
+            return;
+        }
+
+        if (inputOne > 0 && lift.getPosition() <= 2400) {
+            lift.setPower(inputOne);
+        } else if (inputOne < 0 && (lift.getPosition() >= 1000 || (lift.getPosition() > 0 && arm.isDown()))) {
+            lift.setPower(inputOne);
         } else {
             lift.setPower(0);
+        }
+
+        if (lift.getBatteryVoltage() < 10.5) {
+            lift.resetPosition();
         }
     }
 

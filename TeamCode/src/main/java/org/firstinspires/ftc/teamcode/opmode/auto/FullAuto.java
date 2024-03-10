@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 import org.firstinspires.ftc.teamcode.util.Storage;
 import org.firstinspires.ftc.teamcode.util.trajectorysequence.TrajectorySequence;
 
+@SuppressWarnings("FieldCanBeLocal")
 @Autonomous(name="Full Auto")
 public class FullAuto extends LinearOpMode {
     //* create enums for robot/prop position and specified strafe direction
@@ -58,6 +59,7 @@ public class FullAuto extends LinearOpMode {
     private final ElapsedTime timer = new ElapsedTime();
     private int delay = 0;
 
+
     //* create subsystems
     private DriveBase driveBase;
     private Drive drive;
@@ -81,6 +83,9 @@ public class FullAuto extends LinearOpMode {
             bcStrafe, bfStrafe, rcStrafe, rfStrafe,
             bluePixel, redPixel,
             blueStrafeLeft, blueStrafeRight, redStrafeLeft, redStrafeRight;
+
+    //inches away from wall for extra pixel paths
+    private final double inchesFromWall = 1.5;
 
     //runs once
     @Override
@@ -116,7 +121,7 @@ public class FullAuto extends LinearOpMode {
                     new RunFirstPaths(this, drive, robotPosition),
                     new PlacePixelCommand(lift, arm, holder, 1450, 0.5),
                     new InstantCommand(() -> Storage.currentPose = drive.getPoseEstimate()),
-                    new InstantCommand(() -> buildFinalPaths(1.5)),
+                    new InstantCommand(this::buildFinalPaths),
                     new RunFinalPaths(this, drive, lift, arm, holder, autoIndex),
                     new InstantCommand(() -> {
                         if (robotPosition == RobotPosition.BLUE_CLOSE || robotPosition == RobotPosition.BLUE_FAR) {
@@ -390,9 +395,8 @@ public class FullAuto extends LinearOpMode {
 
     /**
      * Builds final auto paths
-     * @param inchesFromWall the distance between the robot and the wall when intaking pixels
      */
-    private void buildFinalPaths(double inchesFromWall) {
+    private void buildFinalPaths() {
         //* extra pixel paths
         bluePixel = drive.trajectorySequenceBuilder(new Pose2d(51.00, Storage.currentPose.getY(), Math.toRadians(0.00)))
                 .setReversed(true)

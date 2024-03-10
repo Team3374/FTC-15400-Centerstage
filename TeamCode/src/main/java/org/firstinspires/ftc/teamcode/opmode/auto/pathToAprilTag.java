@@ -17,6 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings({"unused", "FieldCanBeLocal"})
 @Autonomous(name="Drive to AprilTag", group = "Test")
 public class pathToAprilTag extends LinearOpMode {
     final double DISTANCE = 12.0; //camera distance to april tag
@@ -30,14 +31,15 @@ public class pathToAprilTag extends LinearOpMode {
         //create "robot"
         DriveBase drive = new DriveBase(hardwareMap);
 
-        boolean targetFound = false;
+        boolean targetFound;
+
         boolean followingPath = false;
 
         Pose2d startingPose = new Pose2d(0, 0, 0);
 
         initAprilTag();
 
-        setManualExposure(6, 250);
+        setManualExposure();
 
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
@@ -96,7 +98,7 @@ public class pathToAprilTag extends LinearOpMode {
                 .build();
     }
 
-    private void setManualExposure(int exposureMS, int gain) {
+    private void setManualExposure() {
         // Wait for the camera to be open, then use the controls
 
         if (visionPortal == null) {
@@ -122,10 +124,10 @@ public class pathToAprilTag extends LinearOpMode {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 sleep(50);
             }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            exposureControl.setExposure(6, TimeUnit.MILLISECONDS);
             sleep(20);
             GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-            gainControl.setGain(gain);
+            gainControl.setGain(250);
             sleep(20);
         }
     }

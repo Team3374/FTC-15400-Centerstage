@@ -2,20 +2,23 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 public class Lift extends SubsystemBase {
-    //* create lift motors
-    private final Motor leftLiftMotor;
-    private final Motor rightLiftMotor;
+    //* create lift motors and voltage sensor
+    private final MotorEx leftLiftMotor;
+    private final MotorEx rightLiftMotor;
+
+    private final VoltageSensor batteryVoltageSensor;
 
     public Lift(HardwareMap hardwareMap) {
-        //* initialize shooter motors
-        leftLiftMotor = new Motor(hardwareMap, "leftLiftMotor");
-        rightLiftMotor = new Motor(hardwareMap, "rightLiftMotor");
+        //* initialize shooter motors and sensor
+        leftLiftMotor = new MotorEx(hardwareMap, "leftLiftMotor");
+        rightLiftMotor = new MotorEx(hardwareMap, "rightLiftMotor");
 
-        leftLiftMotor.setInverted(true);
-        rightLiftMotor.setInverted(true);
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         leftLiftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         rightLiftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
@@ -45,8 +48,19 @@ public class Lift extends SubsystemBase {
         rightLiftMotor.set(power);
     }
 
+    //* resets lift position
+    public void resetPosition() {
+        leftLiftMotor.stopAndResetEncoder();
+        rightLiftMotor.stopAndResetEncoder();
+    }
+
     //* returns the max. position of lifts
     public int getPosition() {
         return  Math.max(leftLiftMotor.getCurrentPosition(), rightLiftMotor.getCurrentPosition());
+    }
+
+    //* returns battery voltage
+    public double getBatteryVoltage() {
+        return batteryVoltageSensor.getVoltage();
     }
 }

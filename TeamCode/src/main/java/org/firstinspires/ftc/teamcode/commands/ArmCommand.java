@@ -23,7 +23,7 @@ public class ArmCommand extends CommandBase {
     //* set arm position based on target
     @Override
     public void initialize() {
-        if (arm.getTargetPosition() <= 0.1) {
+        if (arm.getTargetPosition() <= 0.2) {
             arm.setPosition(targetPosition);
         } else {
             arm.down();
@@ -33,7 +33,7 @@ public class ArmCommand extends CommandBase {
     //* for up, check analog. for down, check sensor
     @Override
     public boolean isFinished() {
-        if (targetPosition <= 0.1) {
+        if (targetPosition <= 0.2) {
             return arm.isDown();
         } else {
             //return arm.getPosition() >= targetPosition; TODO: PUT BACK IN WHEN WIRED

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 import org.firstinspires.ftc.teamcode.util.Storage;
 
+@SuppressWarnings("unused")
 @Autonomous(name="Do Nothing")
 public class DoNothing extends LinearOpMode {
 

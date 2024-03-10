@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 import org.firstinspires.ftc.teamcode.util.Storage;
 import org.firstinspires.ftc.teamcode.util.trajectorysequence.TrajectorySequence;
 
+@SuppressWarnings("unused")
 @Autonomous(name="Park")
 public class Park extends CommandOpMode {
     private DriveBase drive;

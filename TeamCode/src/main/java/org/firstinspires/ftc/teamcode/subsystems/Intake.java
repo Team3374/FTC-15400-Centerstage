@@ -11,6 +11,8 @@ public class Intake extends SubsystemBase {
     public Intake(HardwareMap hardwareMap) {
         //* initialize intake motor
         intakeMotor = new Motor(hardwareMap, "intakeMotor");
+
+        intakeMotor.setInverted(true);
     }
 
     //* set the power of the intake

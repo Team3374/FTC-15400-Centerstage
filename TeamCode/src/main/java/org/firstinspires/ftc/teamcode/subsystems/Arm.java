@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.rev.RevTouchSensor;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -22,11 +21,8 @@ public class Arm extends SubsystemBase {
 //        servoInput = hardwareMap.get(AnalogInput.class, "servoInput");
         armSensor = hardwareMap.get(RevTouchSensor.class, "holder");
 
-        leftArmServo.setDirection(Servo.Direction.REVERSE);
-        rightArmServo.setDirection(Servo.Direction.FORWARD);
-
-        leftArmServo.setPosition(0.1);
-        rightArmServo.setPosition(0.1);
+        leftArmServo.setPosition(0.075);
+        rightArmServo.setPosition(0.075);
     }
 
     //* set arm to specified position
@@ -36,19 +32,14 @@ public class Arm extends SubsystemBase {
     }
 
     public void down() {
-        leftArmServo.setPosition(0.1);
-        rightArmServo.setPosition(0.1);
+        leftArmServo.setPosition(0.075);
+        rightArmServo.setPosition(0.075);
     }
 
     //* returns target position of servos
     public double getTargetPosition() {
         return leftArmServo.getPosition();
     }
-
-    //* return analog position of servo (0 to 1)
-//    public double getPosition() {
-//        return servoInput.getVoltage() / 3.3;
-//    }
 
     //* returns true if touch sensor pressed
     public boolean isDown() {
