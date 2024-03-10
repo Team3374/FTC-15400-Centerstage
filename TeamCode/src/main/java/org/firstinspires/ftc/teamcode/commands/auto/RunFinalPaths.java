@@ -32,7 +32,7 @@ public class RunFinalPaths extends SequentialCommandGroup {
         } else {
             for (int count = 0; count < autoIndex; count++) {
                 addCommands(new FollowTrajectorySequence(drive, auto.redPixel));
-                addCommands(new PlacePixelCommand(lift, arm, holder, 1700, 0.5));
+                addCommands(new PlacePixelCommand(lift, arm, holder, 1200, 0.5));
             }
 
             switch (auto.strafeSelection) {

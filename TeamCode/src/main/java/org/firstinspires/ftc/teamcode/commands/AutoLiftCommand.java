@@ -37,11 +37,6 @@ public class AutoLiftCommand extends CommandBase {
     //* run once
     @Override
     public boolean isFinished() {
-        if (lift.getBatteryVoltage() < 10.5) {
-            lift.resetPosition();
-            return true;
-        }
-
         if (targetPosition > 0) {
             return lift.getPosition() >= targetPosition;
         } else {

@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.CRServo;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Holder extends SubsystemBase {
@@ -10,18 +11,18 @@ public class Holder extends SubsystemBase {
 
     public Holder(HardwareMap hardwareMap) {
         //* initialize holder servo
-        holderServo = new CRServo(hardwareMap, "holderServo");
+        holderServo = hardwareMap.get(CRServo.class, "holderServo");
 
-        holderServo.setInverted(true);
+        holderServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     //* set holder servo power (volts)
     public void setPower(double power) {
-        holderServo.set(power);
+        holderServo.setPower(power);
     }
 
     //* shorter methods for controlling holder power
-    public void in() {holderServo.set(1);}
-    public void out() {holderServo.set(-1);}
-    public void stop() {holderServo.set(0);}
+    public void in() {holderServo.setPower(1);}
+    public void out() {holderServo.setPower(-1);}
+    public void stop() {holderServo.setPower(0);}
 }

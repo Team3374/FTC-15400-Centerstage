@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.ArmCommand;
@@ -23,7 +24,8 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 import org.firstinspires.ftc.teamcode.util.Storage;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
-@TeleOp
+@Photon
+@TeleOp(name = "Main Op Mode")
 public class mainOpMode extends CommandOpMode {
     //* create all subsystems
     private Drive drive;
@@ -156,6 +158,7 @@ public class mainOpMode extends CommandOpMode {
                     telemetry.addData("y", drive.getPoseEstimate().getY());
                     telemetry.addData("heading", drive.getPoseEstimate().getHeading());
                     telemetry.addLine();
+                    telemetry.addData("Max Lift Current", lift.getCurrent());
                     telemetry.addData("Lift Position", lift.getPosition());
                     telemetry.addData("Arm Target Position", arm.getTargetPosition());
                     telemetry.addLine();

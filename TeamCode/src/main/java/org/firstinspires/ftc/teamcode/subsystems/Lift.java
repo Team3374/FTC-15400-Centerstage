@@ -1,30 +1,27 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Lift extends SubsystemBase {
     //* create lift motors and voltage sensor
-    private final MotorEx leftLiftMotor;
-    private final MotorEx rightLiftMotor;
-
-    private final VoltageSensor batteryVoltageSensor;
+    private final DcMotorEx leftLiftMotor;
+    private final DcMotorEx rightLiftMotor;
 
     public Lift(HardwareMap hardwareMap) {
         //* initialize shooter motors and sensor
-        leftLiftMotor = new MotorEx(hardwareMap, "leftLiftMotor");
-        rightLiftMotor = new MotorEx(hardwareMap, "rightLiftMotor");
+        leftLiftMotor = hardwareMap.get(DcMotorEx.class, "leftLiftMotor");
+        rightLiftMotor = hardwareMap.get(DcMotorEx.class, "rightLiftMotor");
 
-        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+        leftLiftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightLiftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        leftLiftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        rightLiftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-
-        leftLiftMotor.stopAndResetEncoder();
-        rightLiftMotor.stopAndResetEncoder();
+        leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     //* set lift to specified position
@@ -32,26 +29,26 @@ public class Lift extends SubsystemBase {
         leftLiftMotor.setTargetPosition(targetPosition);
         rightLiftMotor.setTargetPosition(targetPosition);
 
-        leftLiftMotor.setRunMode(Motor.RunMode.PositionControl);
-        rightLiftMotor.setRunMode(Motor.RunMode.PositionControl);
+        leftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftLiftMotor.set(1);
-        rightLiftMotor.set(1);
+        leftLiftMotor.setPower(1);
+        rightLiftMotor.setPower(1);
     }
 
     //* set lift power (volts)
     public void setPower(double power) {
-        leftLiftMotor.setRunMode(Motor.RunMode.RawPower);
-        rightLiftMotor.setRunMode(Motor.RunMode.RawPower);
+        leftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftLiftMotor.set(power);
-        rightLiftMotor.set(power);
+        leftLiftMotor.setPower(power);
+        rightLiftMotor.setPower(power);
     }
 
     //* resets lift position
     public void resetPosition() {
-        leftLiftMotor.stopAndResetEncoder();
-        rightLiftMotor.stopAndResetEncoder();
+        leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     //* returns the max. position of lifts
@@ -59,8 +56,8 @@ public class Lift extends SubsystemBase {
         return  Math.max(leftLiftMotor.getCurrentPosition(), rightLiftMotor.getCurrentPosition());
     }
 
-    //* returns battery voltage
-    public double getBatteryVoltage() {
-        return batteryVoltageSensor.getVoltage();
+    //* returns max motor current
+    public double getCurrent() {
+        return Math.max(leftLiftMotor.getCurrent(CurrentUnit.AMPS), rightLiftMotor.getCurrent(CurrentUnit.AMPS));
     }
 }

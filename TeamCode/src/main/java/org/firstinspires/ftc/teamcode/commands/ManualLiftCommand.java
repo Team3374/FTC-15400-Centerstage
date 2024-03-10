@@ -38,16 +38,14 @@ public class ManualLiftCommand extends CommandBase {
             return;
         }
 
-        if (inputOne > 0 && lift.getPosition() <= 2400) {
-            lift.setPower(inputOne);
-        } else if (inputOne < 0 && (lift.getPosition() >= 1000 || (lift.getPosition() > 0 && arm.isDown()))) {
+        boolean currentInThreshold = lift.getCurrent() < 3.25;
+        boolean positiveInputInLimit = inputOne > 0 && lift.getPosition() <= 1700;
+        boolean negativeInputInLimit = inputOne < 0 && (lift.getPosition() >= 1000 || (lift.getPosition() > 0 && arm.isDown()));
+
+        if (currentInThreshold && (positiveInputInLimit || negativeInputInLimit)) {
             lift.setPower(inputOne);
         } else {
             lift.setPower(0);
-        }
-
-        if (lift.getBatteryVoltage() < 10.5) {
-            lift.resetPosition();
         }
     }
 

@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.util.Storage;
 import org.firstinspires.ftc.teamcode.util.trajectorysequence.TrajectorySequence;
 
 @SuppressWarnings("FieldCanBeLocal")
+@Photon
 @Autonomous(name="Full Auto")
 public class FullAuto extends LinearOpMode {
     //* create enums for robot/prop position and specified strafe direction
@@ -119,7 +121,7 @@ public class FullAuto extends LinearOpMode {
             new SequentialCommandGroup(
                     new InstantCommand(this::buildFirstPaths),
                     new RunFirstPaths(this, drive, robotPosition),
-                    new PlacePixelCommand(lift, arm, holder, 1450, 0.5),
+                    new PlacePixelCommand(lift, arm, holder, 1000, 0.5),
                     new InstantCommand(() -> Storage.currentPose = drive.getPoseEstimate()),
                     new InstantCommand(this::buildFinalPaths),
                     new RunFinalPaths(this, drive, lift, arm, holder, autoIndex),
