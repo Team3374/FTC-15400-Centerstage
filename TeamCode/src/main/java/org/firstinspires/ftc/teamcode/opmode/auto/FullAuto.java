@@ -37,7 +37,7 @@ public class FullAuto extends LinearOpMode {
         RED_CLOSE,
         RED_FAR
     }
-    public RobotPosition robotPosition;
+    private RobotPosition robotPosition;
 
     public enum PropPosition {
         CLOSE,

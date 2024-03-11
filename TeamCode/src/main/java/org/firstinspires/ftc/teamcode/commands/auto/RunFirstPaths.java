@@ -17,7 +17,7 @@ public class RunFirstPaths extends SequentialCommandGroup {
         );
     }
 
-    public void runPaths(FullAuto auto, Drive drive, FullAuto.RobotPosition robotPosition) {
+    private void runPaths(FullAuto auto, Drive drive, FullAuto.RobotPosition robotPosition) {
         if (auto.propPosition == FullAuto.PropPosition.MIDDLE) {
             switch (robotPosition) {
                 case BLUE_CLOSE:
@@ -58,7 +58,7 @@ public class RunFirstPaths extends SequentialCommandGroup {
         );
     }
 
-    public void runSecondary(FullAuto auto, Drive drive, FullAuto.RobotPosition robotPosition) {
+    private void runSecondary(FullAuto auto, Drive drive, FullAuto.RobotPosition robotPosition) {
         if (auto.propPosition == FullAuto.PropPosition.FAR) {
             switch (robotPosition) {
                 case BLUE_CLOSE:

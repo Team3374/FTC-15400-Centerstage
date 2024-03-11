@@ -4,7 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
 
@@ -15,6 +14,8 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.DriveBase;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
+
+@SuppressWarnings("unused")
 @TeleOp(group = "drive")
 public class LocalizationTest extends LinearOpMode {
     @Override
@@ -22,9 +23,6 @@ public class LocalizationTest extends LinearOpMode {
         DriveBase drive = new DriveBase(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        Servo leftServo = hardwareMap.get(Servo.class, "leftArmServo");
-        Servo rightServo = hardwareMap.get(Servo.class, "rightArmServo");
 
         waitForStart();
 
@@ -38,9 +36,6 @@ public class LocalizationTest extends LinearOpMode {
             );
 
             drive.update();
-
-            leftServo.setPosition(gamepad1.right_trigger + 0.075);
-            rightServo.setPosition(gamepad1.right_trigger + 0.075);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());

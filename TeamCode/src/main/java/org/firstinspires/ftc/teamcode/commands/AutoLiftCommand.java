@@ -5,6 +5,8 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 
+import java.util.function.DoubleSupplier;
+
 public class AutoLiftCommand extends CommandBase {
     //* create subsystems
     private final Lift lift;
@@ -13,14 +15,24 @@ public class AutoLiftCommand extends CommandBase {
     //* create helper vars
     private final int targetPosition;
 
-    public AutoLiftCommand(Lift lift, Arm arm, int targetPosition) {
+    private final DoubleSupplier triggerOneSupplier;
+    private final DoubleSupplier triggerTwoSupplier;
+
+    public AutoLiftCommand(Lift lift, Arm arm, int targetPosition, DoubleSupplier triggerOneSupplier, DoubleSupplier triggerTwoSupplier) {
         //* initialize subsystems/helpers and set req.
         this.lift = lift;
         this.arm = arm;
 
         this.targetPosition = targetPosition;
 
+        this.triggerOneSupplier = triggerOneSupplier;
+        this.triggerTwoSupplier = triggerTwoSupplier;
+
         addRequirements(lift, arm);
+    }
+
+    public AutoLiftCommand(Lift lift, Arm arm, int targetPosition) {
+        this(lift, arm, targetPosition, () -> 0, () -> 0);
     }
 
     //* set lift position based on target
@@ -37,10 +49,6 @@ public class AutoLiftCommand extends CommandBase {
     //* run once
     @Override
     public boolean isFinished() {
-        if (targetPosition > 0) {
-            return lift.getPosition() >= targetPosition;
-        } else {
-            return lift.getPosition() <= targetPosition;
-        }
+        return Math.abs(triggerOneSupplier.getAsDouble() + triggerTwoSupplier.getAsDouble()) > 0.05;
     }
 }

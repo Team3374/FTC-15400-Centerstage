@@ -11,77 +11,49 @@ import org.firstinspires.ftc.teamcode.util.Storage;
 @Autonomous(name="Do Nothing")
 public class DoNothing extends LinearOpMode {
 
-    private String selectedPosition = null;
+    private enum SelectedPosition {
+        BLUE_CLOSE,
+        BLUE_FAR,
+        RED_CLOSE,
+        RED_FAR
+    }
+    private SelectedPosition selectedPosition;
 
     @Override
     public void runOpMode() throws InterruptedException {
         DriveBase drive = new DriveBase(hardwareMap);
 
-        telemetry.addLine("Please choose from the following positions:");
-        telemetry.addData("A", "Blue Park (Close)");
-        telemetry.addData("B", "Blue Park (Far)");
-        telemetry.addData("X", "Red Park (Close)");
-        telemetry.addData("Y", "Red Park (Far)");
-        telemetry.update();
-
         while(opModeInInit()) {
+            telemetry.addLine("Please choose from the following positions:");
+            telemetry.addData("A", "Blue Park (Close)");
+            telemetry.addData("B", "Blue Park (Far)");
+            telemetry.addData("X", "Red Park (Close)");
+            telemetry.addData("Y", "Red Park (Far)");
+            telemetry.addLine();
+
             if (gamepad1.a) {
-                selectedPosition = "bc";
+                selectedPosition = SelectedPosition.BLUE_CLOSE;
+                drive.setPoseEstimate(new Pose2d(12, 64.50, Math.toRadians(-90.00)));
 
-                drive.setPoseEstimate(new Pose2d(12, 63.50, Math.toRadians(-90.00)));
-
-                telemetry.clearAll();
-                telemetry.addLine("Please choose from the following positions:");
-                telemetry.addData("A", "Blue Park (Close)");
-                telemetry.addData("B", "Blue Park (Far)");
-                telemetry.addData("X", "Red Park (Close)");
-                telemetry.addData("Y", "Red Park (Far)");
-                telemetry.addLine();
                 telemetry.addLine("Selected Position: Blue Park (Close)");
-                telemetry.update();
             } else if (gamepad1.b) {
-                selectedPosition = "bf";
+                selectedPosition = SelectedPosition.BLUE_FAR;
+                drive.setPoseEstimate(new Pose2d(-36, 64.50, Math.toRadians(-90.00)));
 
-                drive.setPoseEstimate(new Pose2d(-36, 63.50, Math.toRadians(-90.00)));
-
-                telemetry.clearAll();
-                telemetry.addLine("Please choose from the following positions:");
-                telemetry.addData("A", "Blue Park (Close)");
-                telemetry.addData("B", "Blue Park (Far)");
-                telemetry.addData("X", "Red Park (Close)");
-                telemetry.addData("Y", "Red Park (Far)");
-                telemetry.addLine();
                 telemetry.addLine("Selected Position: Blue Park (Far)");
-                telemetry.update();
             } else if (gamepad1.x) {
-                selectedPosition = "rc";
+                selectedPosition = SelectedPosition.RED_CLOSE;
+                drive.setPoseEstimate(new Pose2d(12, -64.50, Math.toRadians(90.00)));
 
-                drive.setPoseEstimate(new Pose2d(12, -63.50, Math.toRadians(90.00)));
-
-                telemetry.clearAll();
-                telemetry.addLine("Please choose from the following positions:");
-                telemetry.addData("A", "Blue Park (Close)");
-                telemetry.addData("B", "Blue Park (Far)");
-                telemetry.addData("X", "Red Park (Close)");
-                telemetry.addData("Y", "Red Park (Far)");
-                telemetry.addLine();
                 telemetry.addLine("Selected Position: Red Park (Close)");
-                telemetry.update();
             } else if (gamepad1.y) {
-                selectedPosition = "rf";
+                selectedPosition = SelectedPosition.RED_FAR;
+                drive.setPoseEstimate(new Pose2d(-36, -64.50, Math.toRadians(90.00)));
 
-                drive.setPoseEstimate(new Pose2d(-36, -63.50, Math.toRadians(90.00)));
-
-                telemetry.clearAll();
-                telemetry.addLine("Please choose from the following positions:");
-                telemetry.addData("A", "Blue Park (Close)");
-                telemetry.addData("B", "Blue Park (Far)");
-                telemetry.addData("X", "Red Park (Close)");
-                telemetry.addData("Y", "Red Park (Far)");
-                telemetry.addLine();
                 telemetry.addLine("Selected Position: Red Park (Far)");
-                telemetry.update();
             }
+
+            telemetry.update();
         }
 
         waitForStart();

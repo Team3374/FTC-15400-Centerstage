@@ -16,11 +16,6 @@ public class Intake extends SubsystemBase {
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
     }
 
-    //* set the power of the intake
-    public void setPower(double power) {
-        intakeMotor.setPower(power);
-    }
-
     //* shorter methods for controlling intake power
     public void in() {intakeMotor.setPower(1);}
     public void out() {intakeMotor.setPower(-1);}

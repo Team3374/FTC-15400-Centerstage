@@ -16,11 +16,6 @@ public class Holder extends SubsystemBase {
         holderServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    //* set holder servo power (volts)
-    public void setPower(double power) {
-        holderServo.setPower(power);
-    }
-
     //* shorter methods for controlling holder power
     public void in() {holderServo.setPower(1);}
     public void out() {holderServo.setPower(-1);}
